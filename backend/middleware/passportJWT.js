@@ -2,7 +2,7 @@
 const passport = require('passport');
 const JWTStrategy = require('passport-jwt').Strategy;
 const ExtractJWT = require('passport-jwt').ExtractJwt;
-const UserModel = require('./models/UserModel');
+const UserModel = require('../models/User');
 ///
 
 /// Passport Initialisation
@@ -16,7 +16,7 @@ passport.use(new JWTStrategy(opts, function (jwt_payload, done) {
     UserModel.findOne({ id: jwt_payload.id }, (err, user) => {
         if (err) { return done(err, false); } // error fetching from MongoDB, pass error to next middleware
         if (user) { return done(null, user); } // no error, user found
-        return done(null, null); // no error, user was not found
+        return done(null, false); // no error, user was not found
     });
 }));
 ///
