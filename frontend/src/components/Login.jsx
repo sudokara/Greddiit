@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import { Navigate, redirect, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Login = ({ isLoading, setIsLoading }) => {
   const [email, setEmail] = useState("");
@@ -16,10 +16,13 @@ const Login = ({ isLoading, setIsLoading }) => {
     }, 1000);
 
     if (email === "admin" && password === "admin") {
+      localStorage.setItem(
+        "MIICXAIBAAKBgQCXGAO6Lh9QhTHDMa1T",
+        "UV51D7fGZIR8fW6KpEGCFRQ+ae2AjXQj"
+      );
       navigate("/me", { replace: true });
-    }
-    else {
-        setShowError(true);
+    } else {
+      setShowError(true);
     }
   };
 

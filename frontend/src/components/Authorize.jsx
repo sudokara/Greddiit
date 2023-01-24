@@ -1,9 +1,19 @@
 import React from "react";
 import { useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import Login from "./Login";
 import Signup from "./Signup";
 
 const Authorize = () => {
+  const navigate = useNavigate();
+
+  if (
+    localStorage.getItem("MIICXAIBAAKBgQCXGAO6Lh9QhTHDMa1T") ===
+    "UV51D7fGZIR8fW6KpEGCFRQ+ae2AjXQj"
+  ) {
+    console.log("You are already logged in");
+  }
+
   const [login, setLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -45,7 +55,7 @@ const Authorize = () => {
           {login ? (
             <Login isLoading={isLoading} setIsLoading={setIsLoading} />
           ) : (
-            <Signup />
+            <Signup isLoading={isLoading} setIsLoading={setIsLoading} />
           )}
         </div>
       </div>
