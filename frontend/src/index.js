@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 // import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import RequireAuth from "./components/RequireAuth";
 import RequireUnauth from "./components/RequireUnauth";
 import Authorize from "./components/Authorize";
@@ -15,6 +15,14 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
+        <Route
+          path="/"
+          element={
+            <RequireAuth redirectTo={"/auth"}>
+              <Navigate to="/me" />
+            </RequireAuth>
+          }
+        />
         <Route
           path="/auth"
           element={

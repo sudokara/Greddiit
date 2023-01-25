@@ -118,6 +118,7 @@ const Signup = ({ isLoading, setIsLoading }) => {
             </label>
             <input
               type="tel"
+              pattern="[0-9]{10}"
               placeholder="1234567890"
               className="input input-bordered active:border-indigo-500/100 hover:border-indigo-500/100 focus:border-indigo-500/100"
               value={contactNo}
