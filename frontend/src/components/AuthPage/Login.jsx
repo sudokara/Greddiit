@@ -32,11 +32,14 @@ const Login = ({ isLoading, setIsLoading }) => {
         <div className="card-body">
           <div className="form-control">
             <label className="label">
-              <span className="label-text">Email</span>
+              {/* <span className="label-text">Email</span> */}
+              <span className="label-text">Username</span>
             </label>
             <input
-              type="email"
-              placeholder="example@example.com"
+              // type="email"
+              type="text"
+              // placeholder="example@example.com"
+              placeholder="admin"
               className="input input-bordered active:border-indigo-500/100 hover:border-indigo-500/100 focus:border-indigo-500/100"
               value={email}
               disabled={isLoading}
@@ -51,7 +54,8 @@ const Login = ({ isLoading, setIsLoading }) => {
               </label>
               <input
                 type="password"
-                placeholder="notqwerty123"
+                // placeholder="notqwerty123"
+                placeholder="admin"
                 className="input input-bordered active:border-indigo-500/100 hover:border-indigo-500/100 focus:border-indigo-500/100"
                 value={password}
                 disabled={isLoading}
