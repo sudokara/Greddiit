@@ -1,5 +1,6 @@
 import React from "react";
-import { FaSignOutAlt } from "react-icons/fa";
+import { VscSignOut } from "react-icons/vsc";
+import { BsPerson } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
@@ -7,9 +8,12 @@ const Navbar = () => {
     const navigate = useNavigate();
 
   const handleLogout = () => {
-    // console.log("logout");
     localStorage.clear();
     navigate("/");
+  };
+
+  const handleProfileClick = () => {
+    navigate("/me");
   };
 
   return (
@@ -28,7 +32,10 @@ const Navbar = () => {
                 <a>Item 2</a>
             </li> */}
             <li>
-              <label className="hover:bg-secondary" onClick={handleLogout}>Logout</label>
+                <label className="hover:bg-secondary" onClick={handleProfileClick}><BsPerson /></label>
+            </li>
+            <li>
+              <label className="hover:bg-secondary" onClick={handleLogout}><VscSignOut />Logout</label>
             </li>
           </ul>
         </div>
