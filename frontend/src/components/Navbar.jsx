@@ -2,10 +2,10 @@ import React from "react";
 import { VscSignOut } from "react-icons/vsc";
 import { BsPerson } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
+import RequireAuth from "./RequireAuth";
 
 const Navbar = () => {
-
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.clear();
@@ -20,8 +20,18 @@ const Navbar = () => {
     <>
       {/* Navbar */}
       <div className="navbar bg-base-100 shadow-2xl mt-3">
+        <div className="avatar mx-3">
+          <div className="w-8 rounded">
+            <img
+              src={require("../assets/ghosts.png")}
+              alt="Greddiit Ghosts"
+            />
+          </div>
+        </div>
         <div className="flex-1">
-          <a className="btn btn-ghost normal-case text-xl hover:bg-primary">Greddiit</a>
+          <a className="btn btn-ghost normal-case text-xl hover:bg-primary">
+            Greddiit
+          </a>
         </div>
         <div className="flex-none">
           <ul className="menu menu-horizontal px-1">
@@ -32,10 +42,18 @@ const Navbar = () => {
                 <a>Item 2</a>
             </li> */}
             <li>
-                <label className="hover:bg-secondary" onClick={handleProfileClick}><BsPerson /></label>
+              <label
+                className="hover:bg-secondary"
+                onClick={handleProfileClick}
+              >
+                <BsPerson />
+              </label>
             </li>
             <li>
-              <label className="hover:bg-secondary" onClick={handleLogout}><VscSignOut />Logout</label>
+              <label className="hover:bg-secondary" onClick={handleLogout}>
+                <VscSignOut />
+                Logout
+              </label>
             </li>
           </ul>
         </div>
