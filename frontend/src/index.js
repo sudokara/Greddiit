@@ -6,7 +6,7 @@ import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import RequireAuth from "./components/RequireAuth";
 import RequireUnauth from "./components/RequireUnauth";
-import Authorize from "./components/Authorize";
+import Authorize from "./components/AuthPage/Authorize";
 import Profile from "./components/ProfilePage/Profile";
 import NotFound from "./components/NotFound";
 
