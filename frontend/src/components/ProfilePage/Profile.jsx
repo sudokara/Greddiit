@@ -101,7 +101,7 @@ const Profile = () => {
             />
 
             <Input
-              type="number"
+              type="tel"
               label="Contact"
               value={contactNo}
               setValue={setContactNo}
