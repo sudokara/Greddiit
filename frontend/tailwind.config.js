@@ -9,7 +9,7 @@ module.exports = {
   //daisyUI config
   daisyui: {
     styled: true,
-    themes: true,
+    themes: ["cupcake", "dracula", "cmyk"],
     base: true,
     utils: true,
     logs: true,
