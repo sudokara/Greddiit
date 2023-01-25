@@ -3,7 +3,13 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 // import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  HashRouter,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import RequireAuth from "./components/RequireAuth";
 import RequireUnauth from "./components/RequireUnauth";
 import Authorize from "./components/AuthPage/Authorize";
@@ -13,7 +19,8 @@ import NotFound from "./components/NotFound";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
+    {/* <BrowserRouter> */}
+    <HashRouter>
       <Routes>
         <Route
           path="/"
@@ -41,7 +48,8 @@ root.render(
         />
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </BrowserRouter>
+      {/* </BrowserRouter> */}
+    </HashRouter>
   </React.StrictMode>
 );
 
