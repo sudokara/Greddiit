@@ -15,9 +15,9 @@ const Navbar = () => {
   return (
     <>
       {/* Navbar */}
-      <div className="navbar bg-base-100">
+      <div className="navbar bg-base-100 shadow-2xl mt-3">
         <div className="flex-1">
-          <a className="btn btn-ghost normal-case text-xl">Greddiit</a>
+          <a className="btn btn-ghost normal-case text-xl hover:bg-primary">Greddiit</a>
         </div>
         <div className="flex-none">
           <ul className="menu menu-horizontal px-1">
@@ -28,7 +28,7 @@ const Navbar = () => {
                 <a>Item 2</a>
             </li> */}
             <li>
-              <label onClick={handleLogout}>Logout</label>
+              <label className="hover:bg-secondary" onClick={handleLogout}>Logout</label>
             </li>
           </ul>
         </div>
