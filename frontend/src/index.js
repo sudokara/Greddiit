@@ -19,8 +19,8 @@ import NotFound from "./components/NotFound";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    {/* <BrowserRouter> */}
-    <HashRouter>
+    <BrowserRouter>
+    {/* <HashRouter> */}
       <Routes>
         <Route
           path="/"
@@ -48,8 +48,8 @@ root.render(
         />
         <Route path="*" element={<NotFound />} />
       </Routes>
-      {/* </BrowserRouter> */}
-    </HashRouter>
+      </BrowserRouter>
+    {/* </HashRouter> */}
   </React.StrictMode>
 );
 
