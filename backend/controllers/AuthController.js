@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const httpstatuscodes = require("http-status-codes");
 const UserModel = require("../models/UserModel");
+const mongoose = require("mongoose");
 
 const login = async (req, res) => {
   if (process.env.MODE === "dev") {
@@ -19,7 +20,7 @@ const login = async (req, res) => {
 
   //!
   // Find the user
-  const foundUser = await UserModel.findOne({ username: username }).exec();
+  const foundUser = await UserModel.findOne({ username: username }).lean().exec();
   if (!foundUser) {
     console.log("Invalid login attempt");
     return res.status(httpstatuscodes.StatusCodes.UNAUTHORIZED).send({
@@ -81,13 +82,31 @@ const register = async (req, res) => {
   }
 
   //! get all fields
-  const properties = ["username", "password"];
+  const properties = [
+    "username",
+    "password",
+    "firstname",
+    "lastname",
+    "email",
+    "age",
+    "contactnum",
+  ];
   const hasAllProps = properties.every((item) => req.body.hasOwnProperty(item));
 
   if (!hasAllProps) {
     return res.status(httpstatuscodes.StatusCodes.BAD_REQUEST).send({
       message: "Please fill required fields",
       error: httpstatuscodes.ReasonPhrases.BAD_REQUEST,
+    });
+  }
+
+  // handle duplicate
+  const foundUser = await UserModel.findOne({ username: req.body.username });
+  console.log(foundUser);
+  if (foundUser) {
+    return res.status(httpstatuscodes.StatusCodes.CONFLICT).send({
+      error: httpstatuscodes.ReasonPhrases.CONFLICT,
+      message: "Username already taken",
     });
   }
 
@@ -103,8 +122,13 @@ const register = async (req, res) => {
     }
 
     const newUser = new UserModel({
-      username: req.body.username,
+      firstname: req.body.firstname,
+      lastname: req.body.lastname,
+      username: req.body.username.toLowerCase(),
+      email: req.body.email,
       password: hashedPassword,
+      age: req.body.age,
+      contactnum: req.body.contactnum,
     });
 
     newUser.save((err, doc) => {
@@ -175,7 +199,9 @@ const refresh = async (req, res) => {
     }
 
     // ! find user
-    const foundUser = await UserModel.findOne({ username: username }).exec();
+    const foundUser = await UserModel.findOne({
+      username: decoded.username,
+    }).exec();
     if (!foundUser) {
       console.log("Invalid login attempt");
       return res.status(httpstatuscodes.StatusCodes.UNAUTHORIZED).send({
@@ -185,7 +211,7 @@ const refresh = async (req, res) => {
     }
 
     const newAccessJWT = jwt.sign(
-      { username: "admin" },
+      { username: foundUser.username },
       process.env.JWT_ACCESS_KEY,
       { expiresIn: process.env.JWT_ACCESS_EXPIRY_TIME }
     );
@@ -203,12 +229,6 @@ const logout = async (req, res) => {
       .status(httpstatuscodes.StatusCodes.NO_CONTENT)
       .send({ message: httpstatuscodes.ReasonPhrases.NO_CONTENT });
   }
-
-  //   res.clearCookie("Grediijwt", {
-  //     httpOnly: true,
-  //     //! secure: true,
-  //     sameSite: "None",
-  //   });
 
   res.clearCookie("Greddiijwt");
 
