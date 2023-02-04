@@ -1,3 +1,17 @@
+# 2021101058
+## Phase 1
+
+- The project uses react with [Tailwind](www.tailwindcss.com) and [DaisyUI](daisyui.com) for styling.
+- The route for login/signup is `/auth` and the route for profile is `/me`. All other routes display the 404 page.
+- The `src` folder contains the source code. The `assets` folder contains the images used.
+- In components, there are separate folders for the authentication page and the profile page.
+- There is also a file for the navbar, the 404 page and the middleware for checking if a user is authenticated or unauthenticated.
+- All routes are in `index.js` and `App.js` is unused.
+- The `AuthPage` folder contains the main `Authorize.jsx` file which conditionally renders either `Login.jsx` or `Signup.jsx` based on which mode has been selected in the tab switcher provided in `Authorize.jsx`. The corresponding handler functions are in the login and signup files. Username and password have both been hardcoded to admin. 
+- On successful login, an item is stored in local storage to denote that the user is logged in. If a user who is not logged in attempts to navigate to `/me`, they will immediately be redirected to the login page. Similarly, if a logged in user attempts to visit the login page, they will be automatically redirected to the profile page.
+
+
+***
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

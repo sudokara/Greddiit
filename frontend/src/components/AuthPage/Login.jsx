@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Login = ({ isLoading, setIsLoading }) => {
   const [email, setEmail] = useState("");
@@ -9,21 +10,38 @@ const Login = ({ isLoading, setIsLoading }) => {
 
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+  // const handleLogin = (e) => {
+  //   setIsLoading(true);
+  //   setTimeout(() => {
+  //     setIsLoading(false);
+  //   }, 1000);
 
-    if (email === "admin" && password === "admin") {
-      localStorage.setItem(
-        "MIICXAIBAAKBgQCXGAO6Lh9QhTHDMa1T",
-        "UV51D7fGZIR8fW6KpEGCFRQ+ae2AjXQj"
-      );
-      navigate("/me", { replace: true });
-    } else {
-      setShowError(true);
-    }
+  //   if (email === "admin" && password === "admin") {
+  //     localStorage.setItem(
+  //       "MIICXAIBAAKBgQCXGAO6Lh9QhTHDMa1T",
+  //       "UV51D7fGZIR8fW6KpEGCFRQ+ae2AjXQj"
+  //     );
+  //     navigate("/me", { replace: true });
+  //   } else {
+  //     setShowError(true);
+  //   }
+  // };
+
+  const handleLogin = (e) => {
+    // const res = axios
+    //   .post("http://localhost:5000/auth", {
+    //     username: email,
+    //     password: password,
+    //   })
+    //   .then((res) => console.log(res.data?.accessJWT))
+    //   .catch((err) => console.log(err));
+    (async () => {
+      const res = axios.post("http://localhost:5000/auth", {
+        username: email,
+        password: password,
+      });
+      console.log(res);
+    })();
   };
 
   return (
