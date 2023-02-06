@@ -11,9 +11,15 @@ router.route("/info/:subgr").get(SubGreddiitController.getSubInfo);
 
 router.route("/users/:subgr").get(SubGreddiitController.getSubUsers);
 
-router.route("/jreq/:subgr").get(SubGreddiitController.getJoinRequests);
-router.route("/jreq/:subgr").patch(SubGreddiitController.patchJoinRequests);
-router.route("/jreq/:subgr").post(SubGreddiitController.addJoinRequest);
+router
+  .route("/jreq/:subgr")
+  .get(SubGreddiitController.getJoinRequests)
+  .patch(SubGreddiitController.patchJoinRequests)
+  .post(SubGreddiitController.addJoinRequest);
+
+router.route("/ismod/:subgr").get(SubGreddiitController.isSubMod);
+
+router.route("/leave/:subgr").post(SubGreddiitController.leaveSubgreddiit);
 
 router.route("/delete/:subgr").delete(SubGreddiitController.deleteSubgreddiit);
 

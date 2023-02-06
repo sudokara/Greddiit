@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const SubGreddiit = require("../models/SubGreddiitModel");
+const User = require("../models/UserModel");
 const StatusCodes = require("http-status-codes").StatusCodes;
 const ReasonPhrases = require("http-status-codes").ReasonPhrases;
 
@@ -168,6 +169,15 @@ const deleteSubgreddiit = async (req, res) => {
     });
   }
 
+  SubGreddiit.findOneAndDelete({ name: subgr }, function (err, raw) {
+    if (err) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+        error: ReasonPhrases.INTERNAL_SERVER_ERROR,
+        message: "MongoDB update failed",
+      });
+    }
+  });
+
   return res
     .status(StatusCodes.OK)
     .send({ message: "Functionality incomplete" });
@@ -210,9 +220,9 @@ const getJoinRequests = async (req, res) => {
     );
 };
 
+/// @PATCH gr/jreq/:subgr
 /// Change status of a join request
 /// Only for moderator
-/// PATCH @gr/jreq/:subgr
 const patchJoinRequests = async (req, res) => {
   const username = req.body.username?.toLowerCase();
   const status = req.body.status?.toLowerCase();
@@ -332,6 +342,19 @@ const addJoinRequest = async (req, res) => {
     });
   }
 
+  // check if user has left this subgreddiit before
+  // do not allow joining request if they have left this subgreddiit before
+  const foundUser = await User.findOne(
+    { username: req.user },
+    { left_subgreddiits: 1 }
+  );
+  if (foundUser.left_subgreddiits.includes(subgr)) {
+    return res.status(StatusCodes.FORBIDDEN).send({
+      error: ReasonPhrases.FORBIDDEN,
+      message: "You have left this subgreddiit already",
+    });
+  }
+
   // check if moderator
   if (req.user === foundSubgr.creator) {
     return res.status(StatusCodes.FORBIDDEN).send({
@@ -375,6 +398,97 @@ const addJoinRequest = async (req, res) => {
     .send({ message: "Joining request made" });
 };
 
+const leaveSubgreddiit = async (req, res) => {
+  if (process.env.MODE === "dev") {
+    console.log("Leave subgreddiit");
+  }
+
+  const subgr = req.params.subgr;
+
+  const foundSubgr = await SubGreddiit.findOne(
+    { name: subgr },
+    { followers: 1, creator: 1, num_people: 1 }
+  );
+
+  // check if valid subgreddiit
+  if (!foundSubgr) {
+    return res.status(StatusCodes.BAD_REQUEST).send({
+      error: ReasonPhrases.BAD_REQUEST,
+      message: "Subgreddiit does not exist",
+    });
+  }
+
+  // Don't allow moderator to leave
+  if (req.user === foundSubgr.creator) {
+    return res.status(StatusCodes.FORBIDDEN).send({
+      error: ReasonPhrases.FORBIDDEN,
+      message:
+        "You are the moderator of this subgreddiit. Try deleting it instead.",
+    });
+  }
+
+  // Check if they are part of the subgreddiit
+  if (!foundSubgr.followers.some((item) => item.username === req.user)) {
+    return res.status(StatusCodes.FORBIDDEN).send({
+      error: StatusCodes.FORBIDDEN,
+      message: "You are not part of this subgredddiit",
+    });
+  }
+
+  // They are part of the subgreddiit and not moderator
+  // Let them leave and add the subgreddiit to their left subgreddiits list
+  User.findOneAndUpdate(
+    { username: req.user },
+    { $push: { left_subgreddiits: subgr } },
+    function (err, raw) {
+      if (err) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+          error: ReasonPhrases.INTERNAL_SERVER_ERROR,
+          message: "MongoDB update failed",
+        });
+      }
+    }
+  );
+
+  foundSubgr.num_people -= 1;
+  foundSubgr.followers = foundSubgr.followers.filter(
+    (item) => item.username !== req.user
+  );
+  foundSubgr.save((err, raw) => {
+    if (err) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+        error: ReasonPhrases.INTERNAL_SERVER_ERROR,
+        message: "MongoDB update failed",
+      });
+    }
+  });
+
+  return res.status(StatusCodes.OK).send({ message: "Left subgreddiit" });
+};
+
+const isSubMod = async (req, res) => {
+  const subgr = req.params.subgr;
+  const modStatus = await verifyModerator(req.user, subgr);
+
+  if (modStatus === StatusCodes.BAD_REQUEST) {
+    return res.status(StatusCodes.BAD_REQUEST).send({
+      error: StatusCodes.BAD_REQUEST,
+      message: "Could not find subgreddiit",
+    });
+  }
+
+  if (modStatus === StatusCodes.FORBIDDEN) {
+    return res.status(StatusCodes.FORBIDDEN).send({
+      error: ReasonPhrases.FORBIDDEN,
+      message: "You are not the moderator of this subgreddiit",
+    });
+  }
+
+  return res
+    .status(StatusCodes.OK)
+    .send({ message: "You are the moderator of this subgreddiit" });
+};
+
 module.exports = {
   createSubgreddiit,
   getSubInfo,
@@ -383,4 +497,6 @@ module.exports = {
   getJoinRequests,
   patchJoinRequests,
   addJoinRequest,
+  leaveSubgreddiit,
+  isSubMod,
 };

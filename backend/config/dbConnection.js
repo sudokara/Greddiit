@@ -19,7 +19,7 @@ const connectDB = async () => {
     console.log("disconnecting");
     console.log(mongoose.connection.readyState); // logs 3
   });
-  
+
   mongoose.connection.on("disconnected", () => {
     console.log("disconnected");
     console.log(mongoose.connection.readyState); //logs 0

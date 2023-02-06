@@ -41,6 +41,16 @@ const userSchema = new Schema(
       type: [String],
       required: false,
     },
+    left_subgreddiits: {
+      type: [String],
+      required: false,
+      default: [],
+    },
+    saved_posts: {
+      type: [Number],
+      required: false,
+      default: [],
+    },
   },
   { timestamps: true }
 );
