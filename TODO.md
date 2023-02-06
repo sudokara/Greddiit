@@ -13,7 +13,7 @@ Backend
 - [x] comment on post
 - [x] save post
 - [x] unsave 
-- [ ] upvote and downvote on post - where to store upvotes and downvotes?
+- [x] upvote and downvote on post - where to store upvotes and downvotes?
 - [ ] reports
 - [ ] what to do for blocked users?
 - [ ] Delete posts and reports when deleting subgreddiit
