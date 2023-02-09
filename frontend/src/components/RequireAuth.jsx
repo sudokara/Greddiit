@@ -11,7 +11,7 @@ const RequireAuth = ({ children, redirectTo }) => {
       axiosPrivate
         .get("/api/auth/check")
         .then((response) => {
-          console.log(response);
+          // console.log(response);
           if (response.status === 200) {
             setIsAuthenticated(true);
             setIsLoading(false);
