@@ -31,7 +31,7 @@ Backend
 Frontend
 - [x] Login
 - [x] register
-- [ ] Disable editing username in frontend
+- [x] Disable editing username in frontend
 - [ ] Verify password before editing profile
 
 Bonus
