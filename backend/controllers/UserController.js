@@ -357,6 +357,7 @@ const getProfile = async (req, res) => {
     age: foundUser.age,
     followers: foundUser.followers,
     following: foundUser.following,
+    contactnum: foundUser.contactnum,
     self: isSelf,
   });
 };
