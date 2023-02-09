@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import axios from "../api/axios";
+import { axiosPrivate } from "../api/axios";
 import Loading from "./Loading";
 
 const RequireAuth = ({ children, redirectTo }) => {
@@ -8,13 +8,8 @@ const RequireAuth = ({ children, redirectTo }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("greddiit-access-token");
-    console.log(token);
-    if (token) {
-      axios
-        .get("/auth/check", {
-          headers: { Authorization: "Bearer " + token },
-        })
+      axiosPrivate
+        .get("/auth/check")
         .then((response) => {
           console.log(response);
           if (response.status === 200) {
@@ -26,9 +21,6 @@ const RequireAuth = ({ children, redirectTo }) => {
           setIsLoading(false);
           console.error(err);
         });
-    } else {
-      setIsLoading(false);
-    }
   }, []);
 
   if (isLoading) return <Loading/>;
