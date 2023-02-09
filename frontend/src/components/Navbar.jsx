@@ -1,6 +1,7 @@
 import React from "react";
 import { VscSignOut } from "react-icons/vsc";
 import { BsPerson } from "react-icons/bs";
+import { FiAnchor } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
@@ -15,17 +16,28 @@ const Navbar = () => {
     navigate("/me");
   };
 
+  const handleMySubgreddiitsClick = () => {
+    navigate("/gr");
+  };
+
+  const handleHomeClick = () => {
+    navigate("/");
+  };
+
   return (
     <>
       {/* Navbar */}
       <div className="navbar bg-base-100 shadow-2xl mt-3">
         <div className="avatar mx-3">
-          <div className="w-8 rounded">
+          <div className="w-8 rounded" onClick={handleHomeClick}>
             <img src={require("../assets/ghosts.png")} alt="Greddiit Ghosts" />
           </div>
         </div>
         <div className="flex-1">
-          <div className="btn btn-ghost normal-case text-xl hover:bg-primary">
+          <div
+            className="btn btn-ghost normal-case text-xl hover:bg-primary"
+            onClick={handleHomeClick}
+          >
             Greddiit
           </div>
         </div>
@@ -40,15 +52,24 @@ const Navbar = () => {
             <li>
               <label
                 className="hover:bg-secondary"
+                onClick={handleMySubgreddiitsClick}
+              >
+                <FiAnchor />
+              </label>
+            </li>
+
+            <li>
+              <label
+                className="hover:bg-secondary"
                 onClick={handleProfileClick}
               >
                 <BsPerson />
               </label>
             </li>
+
             <li>
               <label className="hover:bg-secondary" onClick={handleLogout}>
                 <VscSignOut />
-                Logout
               </label>
             </li>
           </ul>

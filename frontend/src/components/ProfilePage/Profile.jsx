@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Navbar from "../Navbar";
 import { useState } from "react";
 import Modal from "./Modal";
@@ -8,8 +8,12 @@ import { axiosPrivate } from "../../api/axios";
 import Loading from "../Loading";
 import NotFound from "../NotFound";
 import jwt_decode from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
+  const navigate = useNavigate();
+
+  // User details
   const [email, setEmail] = useState("admin@admin.com");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("admin");
@@ -19,8 +23,34 @@ const Profile = () => {
   );
   const [contactNo, setContactNo] = useState("23646");
   const [age, setAge] = useState(19);
+
+  // following/followers info
   const [followersArr, setFollowersArr] = useState([]);
   const [followingArr, setFollowingArr] = useState([]);
+
+  // page stuff
+  const [formModified, setFormModified] = useState(false);
+  const [alert, setAlert] = useState("");
+
+  useEffect(() => {
+    const handlePopState = () => {
+      console.log("Back button was pressed");
+      if (formModified) {
+        const confirmation = window.confirm(
+          "Are you sure you want to go back?"
+        );
+        if (confirmation) {
+          navigate(-1);
+        }
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [navigate, formModified]);
 
   const getProfile = async () => {
     try {
@@ -60,9 +90,9 @@ const Profile = () => {
 
   const removeFollowerMutation = useMutation({
     mutationFn: (unfollower) => handleRemoveFollower(unfollower),
-    // onSuccess: () => {
-      // queryClient.invalidateQueries(["profile", username]);
-    // },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["profile", username]);
+    },
   });
 
   const handleUnfollow = async (unfollower) => {
@@ -81,8 +111,39 @@ const Profile = () => {
 
   const unfollowMutation = useMutation({
     mutationFn: (unfollower) => handleUnfollow(unfollower),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["profile", username]);
+    },
+  });
+
+  const handleEdit = async () => {
+    setAlert("loading");
+    axiosPrivate
+      .patch("/api/user/edit", {
+        firstname: firstName,
+        lastname: lastName,
+        contactnum: contactNo,
+        password: password,
+      })
+      .then((response) => {
+        setAlert("success");
+        setTimeout(() => {
+          setAlert("");
+        }, 3000);
+      })
+      .catch((err) => {
+        console.error(err);
+        setAlert("failed");
+        setTimeout(() => {
+          setAlert("");
+        }, 3000);
+      });
+  };
+
+  const editMutation = useMutation({
+    mutationFn: handleEdit,
     // onSuccess: () => {
-    //   queryClient.invalidateQueries(["profile", username]);
+      // queryClient.invalidateQueries(["profile", username]);
     // },
   });
 
@@ -131,6 +192,7 @@ const Profile = () => {
           <div className="bg-base-50 shadow-xl w-1/2 text-center">
             {/* 1 */}
             <Input
+              setFormModified={setFormModified}
               type="text"
               label="First Name"
               value={firstName}
@@ -138,6 +200,7 @@ const Profile = () => {
             />
 
             <Input
+              setFormModified={setFormModified}
               type="text"
               label="Username"
               value={username}
@@ -146,6 +209,7 @@ const Profile = () => {
             />
 
             <Input
+              setFormModified={setFormModified}
               type="number"
               label="Age"
               value={age}
@@ -154,8 +218,9 @@ const Profile = () => {
             />
 
             <Input
-              type="text"
-              label="Password"
+              setFormModified={setFormModified}
+              type="password"
+              label="New Password"
               value={password}
               setValue={setPassword}
             />
@@ -164,6 +229,7 @@ const Profile = () => {
           <div className="bg-base-50 shadow-xl w-1/2">
             {/* 2 */}
             <Input
+              setFormModified={setFormModified}
               type="text"
               label="Last Name"
               value={lastName}
@@ -171,6 +237,7 @@ const Profile = () => {
             />
 
             <Input
+              setFormModified={setFormModified}
               type="text"
               label="Email"
               value={email}
@@ -179,6 +246,7 @@ const Profile = () => {
             />
 
             <Input
+              setFormModified={setFormModified}
               type="tel"
               label="Contact"
               value={contactNo}
@@ -186,9 +254,56 @@ const Profile = () => {
             />
 
             <div className="">
-              <button className="my-6 mx-10 btn w-[44] btn-secondary">
+              <button
+                className={`my-6 mx-10 btn w-[44] btn-secondary ${alert === "loading" || editMutation.isLoading ? "loading" : ""} `}
+                onClick={editMutation.mutate}
+                disabled={
+                  !password || editMutation.isLoading || alert === "loading"
+                }
+              >
                 Save Changes
               </button>
+              {alert === "success" ? (
+                <div className="alert alert-success shadow-lg">
+                  <div>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="stroke-current flex-shrink-0 h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span>Profile updated</span>
+                  </div>
+                </div>
+              ) : alert === "failure" ? (
+                <div className="alert alert-error shadow-lg">
+                  <div>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="stroke-current flex-shrink-0 h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span>Error! Could not update profile.</span>
+                  </div>
+                </div>
+              ) : (
+                ""
+              )}
             </div>
           </div>
         </div>
