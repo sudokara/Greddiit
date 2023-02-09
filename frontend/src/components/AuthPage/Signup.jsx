@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "../../api/axios";
 
 const Signup = ({ isLoading, setIsLoading }) => {
   const [email, setEmail] = useState("");
@@ -10,15 +11,35 @@ const Signup = ({ isLoading, setIsLoading }) => {
   const [username, setUsername] = useState("");
   const [contactNo, setContactNo] = useState("");
   const [age, setAge] = useState(18);
+  const [showError, setShowError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const navigate = useNavigate();
 
   const handleSignup = (e) => {
+    setShowError(false);
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      navigate("/me");
-    }, 1000);
+    axios
+      .post("/auth/register", {
+        firstname: firstName,
+        lastname: lastName,
+        email,
+        contactnum: contactNo,
+        age,
+        username,
+        password,
+      })
+      .then((response) => {
+        // console.log(response?.data?.accessJWT);
+        localStorage.setItem("greddiit-access-token", response.data.accessJWT);
+        navigate("/me", { replace: true });
+      })
+      .catch((err) => {
+        console.error(err);
+        setShowError(true);
+        setErrorMsg(err.response.data.message);
+      })
+      .then(() => setIsLoading(false));
   };
 
   return (
@@ -144,6 +165,28 @@ const Signup = ({ isLoading, setIsLoading }) => {
               >
                 <span>Signup</span>
               </button>
+              {showError ? (
+                <div className="alert alert-error shadow-lg mt-5">
+                  <div>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="stroke-current flex-shrink-0 h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span>{errorMsg}</span>
+                  </div>
+                </div>
+              ) : (
+                ""
+              )}
             </div>
           </form>
         </div>
