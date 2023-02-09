@@ -105,11 +105,18 @@ const register = async (req, res) => {
 
   // handle duplicate
   const foundUser = await UserModel.findOne({ username: req.body.username });
-  console.log(foundUser);
+  const foundEmail = await UserModel.findOne({ email: req.body.email });
+  // console.log(foundUser || foundEmail);
   if (foundUser) {
     return res.status(httpstatuscodes.StatusCodes.CONFLICT).send({
       error: httpstatuscodes.ReasonPhrases.CONFLICT,
       message: "Username already taken",
+    });
+  }
+  if (foundEmail) {
+    return res.status(httpstatuscodes.StatusCodes.CONFLICT).send({
+      error: httpstatuscodes.ReasonPhrases.CONFLICT,
+      message: "There is already an account with this email",
     });
   }
 
