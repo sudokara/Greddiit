@@ -14,10 +14,10 @@ const Profile = () => {
   const navigate = useNavigate();
 
   // User details
-  const [email, setEmail] = useState("admin@admin.com");
+  const [email, setEmail] = useState("loading@loading.com");
   const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("admin");
-  const [lastName, setLastName] = useState("admin");
+  const [firstName, setFirstName] = useState("loading");
+  const [lastName, setLastName] = useState("...");
   const [username, setUsername] = useState(
     jwt_decode(localStorage.getItem("greddiit-access-token")).username
   );
@@ -159,15 +159,15 @@ const Profile = () => {
     <>
       <Navbar />
 
-      <div className="my-6 flex justify-center">
+      {/* <div className="my-6 flex justify-center">
         <div className="text-center card w-96 bg-primary text-primary-content">
           <div className="card-body">
             <h1 className="text-3xl text-center">My Profile</h1>
           </div>
         </div>
-      </div>
+      </div> */}
 
-      <div className="flex flex-column w-full h-full justify-around flex-wrap content-center align-middle ">
+      <div className="flex my-5 flex-column w-full h-full justify-around flex-wrap content-center align-middle ">
         <div className="flex w-full h-full justify-around flex-wrap align-middle mx-3">
           <div className="flex flex-row justify-center bg-base-50  w-1/2 text-center">
             {/* -1 */}
