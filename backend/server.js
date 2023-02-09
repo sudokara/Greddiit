@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(cookieparser());
-app.use(morgan("combined"));
+app.use(morgan("short"));
 connectDB();
 ///
 
@@ -31,11 +31,10 @@ app.get("/", (req, res) => {
     .send(httpstatuscodes.ReasonPhrases.OK);
 });
 
-app.use("/auth", AuthRoutes);
-// app.use("/protected", require("./routes/Protected")); //!
-app.use("/user", UserRoutes);
-app.use("/gr", SubGreddiitRoutes);
-app.use("/post", PostRoutes);
+app.use("/api/auth", AuthRoutes);
+app.use("/api/user", UserRoutes);
+app.use("/api/gr", SubGreddiitRoutes);
+app.use("/api/post", PostRoutes);
 
 app.listen(process.env.BACKEND_PORT || 5000, () => {
   console.log(`Server started on port ${process.env.BACKEND_PORT || 5000}`);
