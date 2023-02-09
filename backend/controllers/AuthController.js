@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const httpstatuscodes = require("http-status-codes");
 const UserModel = require("../models/UserModel");
 const mongoose = require("mongoose");
+const verifyJWT = require("../middleware/VerifyJWT");
 
 const login = async (req, res) => {
   if (process.env.MODE === "dev") {
@@ -20,7 +21,9 @@ const login = async (req, res) => {
 
   //!
   // Find the user
-  const foundUser = await UserModel.findOne({ username: username }).lean().exec();
+  const foundUser = await UserModel.findOne({ username: username })
+    .lean()
+    .exec();
   if (!foundUser) {
     console.log("Invalid login attempt");
     return res.status(httpstatuscodes.StatusCodes.UNAUTHORIZED).send({
@@ -237,4 +240,12 @@ const logout = async (req, res) => {
     .send({ message: "Cookie cleared" });
 };
 
-module.exports = { login, refresh, logout, register };
+const checkAuth = async (req, res) => {
+  return verifyJWT(req, res, () => {
+    return res
+      .status(httpstatuscodes.StatusCodes.OK)
+      .send({ message: "Verified" });
+  });
+};
+
+module.exports = { login, refresh, logout, register, checkAuth };

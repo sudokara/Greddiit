@@ -3,16 +3,14 @@ const router = express.Router();
 const AuthController = require("../controllers/AuthController");
 const loginLimiter = require("../middleware/RateLimiter");
 
-router.route("/")
-    .post(loginLimiter, AuthController.login)
+router.route("/").post(loginLimiter, AuthController.login);
 
-router.route("/refresh")
-    .get(AuthController.refresh)
+router.route("/refresh").get(AuthController.refresh);
 
-router.route("/register")
-    .post(loginLimiter, AuthController.register)
+router.route("/register").post(loginLimiter, AuthController.register);
 
-router.route("/logout")
-    .post(AuthController.logout)
+router.route("/check").get(AuthController.checkAuth);
 
-module.exports = router
+router.route("/logout").post(AuthController.logout);
+
+module.exports = router;
