@@ -1,5 +1,6 @@
 Misc
 - [ ] Do i need to change the route for unsave to only use postid?
+- [x] change to single access token
 
 Backend
 - [x] Ensure follower/following exists in db
@@ -14,6 +15,8 @@ Backend
 - [x] save post
 - [x] unsave 
 - [x] upvote and downvote on post - where to store upvotes and downvotes?
+- [x] remove refresh token cookie
+- [x] check unique username and email
 - [ ] reports
 - [ ] what to do for blocked users?
 - [ ] Delete posts and reports when deleting subgreddiit
@@ -26,6 +29,8 @@ Backend
 
 
 Frontend
+- [x] Login
+- [x] register
 - [ ] Disable editing username in frontend
 - [ ] Verify password before editing profile
 
