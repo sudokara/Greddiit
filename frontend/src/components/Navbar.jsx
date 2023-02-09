@@ -2,14 +2,13 @@ import React from "react";
 import { VscSignOut } from "react-icons/vsc";
 import { BsPerson } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
-import RequireAuth from "./RequireAuth";
 
 const Navbar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate("/");
+    navigate("/auth");
   };
 
   const handleProfileClick = () => {
@@ -22,10 +21,7 @@ const Navbar = () => {
       <div className="navbar bg-base-100 shadow-2xl mt-3">
         <div className="avatar mx-3">
           <div className="w-8 rounded">
-            <img
-              src={require("../assets/ghosts.png")}
-              alt="Greddiit Ghosts"
-            />
+            <img src={require("../assets/ghosts.png")} alt="Greddiit Ghosts" />
           </div>
         </div>
         <div className="flex-1">
