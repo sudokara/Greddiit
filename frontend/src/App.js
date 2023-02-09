@@ -4,6 +4,9 @@ import RequireUnauth from "./components/RequireUnauth";
 import Authorize from "./components/AuthPage/Authorize";
 import Profile from "./components/ProfilePage/Profile";
 import NotFound from "./components/NotFound";
+import MySubgreddiits from "./components/MySubgreddiits/MySubgreddiits";
+import SavedPosts from "./components/SavedPosts/SavedPosts";
+import Subgreddiits from "./components/Subgreddiits/Subgreddiits";
 
 function App() {
   return (
@@ -29,6 +32,30 @@ function App() {
         element={
           <RequireAuth redirectTo="/auth">
             <Profile />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/myr"
+        element={
+          <RequireAuth redirectTo="/auth">
+            <MySubgreddiits />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/r"
+        element={
+          <RequireAuth redirectTo="/auth">
+            <Subgreddiits />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/saved"
+        element={
+          <RequireAuth redirectTo="/auth">
+            <SavedPosts />
           </RequireAuth>
         }
       />
