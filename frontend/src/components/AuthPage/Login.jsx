@@ -1,11 +1,10 @@
-import React, { useContext } from "react";
+import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { AuthContext } from "../../context/AuthProvider";
 
 const Login = ({ isLoading, setIsLoading }) => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showError, setShowError] = useState(false);
 
@@ -29,12 +28,16 @@ const Login = ({ isLoading, setIsLoading }) => {
   // };
 
   const handleLogin = (e) => {
-    const { accessToken } = useContext(AuthContext)(async () => {
+    // const res = axios
+    //   .post("http://localhost:5000/auth", {
+    //     username: email,
+    //     password: password,
+    //   })
+    //   .then((res) => console.log(res.data?.accessJWT))
+    //   .catch((err) => console.log(err));
+    (async () => {
       const res = axios.post("http://localhost:5000/auth", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-        username: username,
+        username: email,
         password: password,
       });
       console.log(res);
@@ -56,9 +59,9 @@ const Login = ({ isLoading, setIsLoading }) => {
               // placeholder="example@example.com"
               placeholder="admin"
               className="input input-bordered active:border-indigo-500/100 hover:border-indigo-500/100 focus:border-indigo-500/100"
-              value={username}
+              value={email}
               disabled={isLoading}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
@@ -103,7 +106,7 @@ const Login = ({ isLoading, setIsLoading }) => {
             </div>
             <div className={`form-control mt-6`}>
               <button
-                disabled={!username || !password}
+                disabled={!email || !password}
                 className={`btn btn-primary ${isLoading ? "loading" : ""}`}
                 onClick={handleLogin}
               >

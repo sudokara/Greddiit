@@ -7,12 +7,12 @@ import Signup from "./Signup";
 const Authorize = () => {
   const navigate = useNavigate();
 
-  // if (
-  //   localStorage.getItem("MIICXAIBAAKBgQCXGAO6Lh9QhTHDMa1T") ===
-  //   "UV51D7fGZIR8fW6KpEGCFRQ+ae2AjXQj"
-  // ) {
-  //   console.log("You are already logged in");
-  // }
+  if (
+    localStorage.getItem("MIICXAIBAAKBgQCXGAO6Lh9QhTHDMa1T") ===
+    "UV51D7fGZIR8fW6KpEGCFRQ+ae2AjXQj"
+  ) {
+    console.log("You are already logged in");
+  }
 
   const [login, setLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
