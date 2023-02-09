@@ -10,9 +10,11 @@ const Authorize = () => {
   const flipLogin = (e) => {
     if (
       !isLoading &&
-      ((login && e.target.text === "Signup") ||
-        (!login && e.target.text === "Login"))
+      ((login && e.target.innerText === "Signup") ||
+        (!login && e.target.innerText === "Login"))
     )
+    // console.log(login);
+    // console.log(e)
       setLogin(!login);
   };
 
