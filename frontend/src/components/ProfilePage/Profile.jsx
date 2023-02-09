@@ -3,23 +3,96 @@ import Navbar from "../Navbar";
 import { useState } from "react";
 import Modal from "./Modal";
 import Input from "./Input";
+import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { axiosPrivate } from "../../api/axios";
+import Loading from "../Loading";
+import NotFound from "../NotFound";
+import jwt_decode from "jwt-decode";
 
 const Profile = () => {
   const [email, setEmail] = useState("admin@admin.com");
-  const [password, setPassword] = useState("admin");
+  const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("admin");
   const [lastName, setLastName] = useState("admin");
-  const [username, setUsername] = useState("admin");
+  const [username, setUsername] = useState(
+    jwt_decode(localStorage.getItem("greddiit-access-token")).username
+  );
   const [contactNo, setContactNo] = useState("23646");
   const [age, setAge] = useState(19);
-  const followersArr = ["Linus_Torvalds", "Alan_Turing", "Dennis_Ritchie"];
-  const followingArr = [
-    "Linus_Torvalds",
-    "Alan_Turing",
-    "Dennis_Ritchie",
-    "Larry_Page",
-    "Mark_Zuckerberg",
-  ];
+  const [followersArr, setFollowersArr] = useState([]);
+  const [followingArr, setFollowingArr] = useState([]);
+
+  const getProfile = async () => {
+    try {
+      const response = await axiosPrivate.get(`/api/user/${username}`);
+      setFirstName(response.data.firstname);
+      setLastName(response.data.lastname);
+      setEmail(response.data.email);
+      setAge(response.data.age);
+      setContactNo(response.data.contactnum);
+      setFollowersArr(response.data.followers);
+      setFollowingArr(response.data.following);
+      return response.data;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  };
+
+  const queryClient = useQueryClient();
+
+  const profileQuery = useQuery({
+    queryKey: ["profile", username],
+    queryFn: getProfile,
+  });
+
+  const handleRemoveFollower = async (unfollower) => {
+    console.log("remove follower");
+    axiosPrivate
+      .post("/api/user/removefollower", { follower: unfollower })
+      .then((response) => {
+        console.log(response);
+        const newFollowers = followersArr.filter((user) => user !== unfollower);
+        setFollowersArr(newFollowers);
+      })
+      .catch((err) => console.error(err));
+  };
+
+  const removeFollowerMutation = useMutation({
+    mutationFn: (unfollower) => handleRemoveFollower(unfollower),
+    // onSuccess: () => {
+      // queryClient.invalidateQueries(["profile", username]);
+    // },
+  });
+
+  const handleUnfollow = async (unfollower) => {
+    console.log("unfollow");
+    axiosPrivate
+      .post("/api/user/unfollow", {
+        unfollow: unfollower,
+      })
+      .then((response) => {
+        console.log(response);
+        const newFollowing = followingArr.filter((user) => user !== unfollower);
+        setFollowingArr(newFollowing);
+      })
+      .catch((err) => console.error(err));
+  };
+
+  const unfollowMutation = useMutation({
+    mutationFn: (unfollower) => handleUnfollow(unfollower),
+    // onSuccess: () => {
+    //   queryClient.invalidateQueries(["profile", username]);
+    // },
+  });
+
+  if (profileQuery.isLoading) {
+    return <Loading />;
+  }
+
+  if (profileQuery.isError) {
+    return <NotFound />;
+  }
 
   return (
     <>
@@ -123,14 +196,16 @@ const Profile = () => {
 
       <Modal
         id="followers-modal"
-        heading="Your followers"
+        heading="Your Followers"
         array={followersArr}
+        handleClick={removeFollowerMutation.mutate}
       />
 
       <Modal
         id="following-modal"
         heading="You're Following"
         array={followingArr}
+        handleClick={unfollowMutation.mutate}
       />
     </>
   );
