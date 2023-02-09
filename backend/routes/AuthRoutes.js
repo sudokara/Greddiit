@@ -5,7 +5,7 @@ const loginLimiter = require("../middleware/RateLimiter");
 
 router.route("/").post(loginLimiter, AuthController.login);
 
-router.route("/refresh").get(AuthController.refresh);
+// router.route("/refresh").get(AuthController.refresh);
 
 router.route("/register").post(loginLimiter, AuthController.register);
 

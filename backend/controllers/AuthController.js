@@ -57,7 +57,7 @@ const login = async (req, res) => {
     }
   );
 
-  const refreshJWT = jwt.sign(
+  /* const refreshJWT = jwt.sign(
     {
       username: req.body.username,
     },
@@ -75,7 +75,7 @@ const login = async (req, res) => {
     maxAge: 7 * 24 * 60 * 60 * 1000, //!
   });
 
-  // Send the access JWT in response
+  Send the access JWT in response */
   res.send({ accessJWT });
 };
 
@@ -166,7 +166,7 @@ const register = async (req, res) => {
     }
   );
 
-  const refreshJWT = jwt.sign(
+  /* const refreshJWT = jwt.sign(
     {
       username: req.body.username,
     },
@@ -182,13 +182,13 @@ const register = async (req, res) => {
     //! secure: true,
     sameSite: "None",
     maxAge: 7 * 24 * 60 * 60 * 1000, //!
-  });
+  }); */
 
   // Send the access JWT in response
   return res.status(httpstatuscodes.StatusCodes.CREATED).send({ accessJWT });
 };
 
-const refresh = async (req, res) => {
+/* const refresh = async (req, res) => {
   if (process.env.MODE === "dev") {
     console.log("Refresh attempt");
   }
@@ -228,7 +228,7 @@ const refresh = async (req, res) => {
 
     res.send({ newAccessJWT });
   });
-};
+}; */
 
 const logout = async (req, res) => {
   console.log("logout");
@@ -255,4 +255,5 @@ const checkAuth = async (req, res) => {
   });
 };
 
-module.exports = { login, refresh, logout, register, checkAuth };
+// module.exports = { login, refresh, logout, register, checkAuth };
+module.exports = { login, logout, register, checkAuth };
