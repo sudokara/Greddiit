@@ -1,27 +1,17 @@
 import React from "react";
 import { VscSignOut } from "react-icons/vsc";
-import { BsPerson } from "react-icons/bs";
+import { BsPerson, BsBookmarks, BsBinoculars } from "react-icons/bs";
 import { FiAnchor } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 const Navbar = () => {
-  const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/auth");
-  };
-
-  const handleProfileClick = () => {
-    navigate("/me");
-  };
-
-  const handleMySubgreddiitsClick = () => {
-    navigate("/gr");
-  };
-
-  const handleHomeClick = () => {
-    navigate("/");
+  const pageTitles = {
+    "/me": "My Profile",
+    "/myr": "My Subgreddiits",
+    "/saved": "Saved Posts",
+    "/r": "Subgreddiits"
   };
 
   return (
@@ -29,18 +19,23 @@ const Navbar = () => {
       {/* Navbar */}
       <div className="navbar bg-base-100 shadow-2xl mt-3">
         <div className="avatar mx-3">
-          <div className="w-8 rounded" onClick={handleHomeClick}>
+          <NavLink className="w-8 rounded" to="/">
             <img src={require("../assets/ghosts.png")} alt="Greddiit Ghosts" />
-          </div>
+          </NavLink>
         </div>
         <div className="flex-1">
-          <div
+          <NavLink
             className="btn btn-ghost normal-case text-xl hover:bg-primary"
-            onClick={handleHomeClick}
+            to="/"
           >
             Greddiit
-          </div>
+          </NavLink>
         </div>
+
+        <div className="flex-1 text-xl text-primary font-bold">
+          {pageTitles[location.pathname]}
+        </div>
+        
         <div className="flex-none">
           <ul className="menu menu-horizontal px-1">
             {/* <li>
@@ -49,28 +44,61 @@ const Navbar = () => {
             <li>
                 <a>Item 2</a>
             </li> */}
-            <li>
-              <label
-                className="hover:bg-secondary"
-                onClick={handleMySubgreddiitsClick}
+
+            <li className="mx-1.5">
+              <NavLink
+                to="/r"
+                className={({ isActive }) =>
+                  isActive ? "bg-primary" : "hover:bg-secondary"
+                }
+              >
+                <BsBinoculars />
+              </NavLink>
+            </li>
+
+            <li className="mx-1.5">
+              <NavLink
+                to="/myr"
+                className={({ isActive }) =>
+                  isActive ? "bg-primary" : "hover:bg-secondary"
+                }
               >
                 <FiAnchor />
-              </label>
+              </NavLink>
+            </li>
+            
+            <li className="mx-1.5">
+              <NavLink
+                to="/saved"
+                className={({ isActive }) =>
+                  isActive ? "bg-primary" : "hover:bg-secondary"
+                }
+              >
+                <BsBookmarks />
+              </NavLink>
             </li>
 
-            <li>
-              <label
-                className="hover:bg-secondary"
-                onClick={handleProfileClick}
+            <li className="mx-1.5">
+              <NavLink
+                to="/me"
+                className={({ isActive }) =>
+                  isActive ? "bg-primary" : "hover:bg-secondary"
+                }
               >
                 <BsPerson />
-              </label>
+              </NavLink>
             </li>
 
-            <li>
-              <label className="hover:bg-secondary" onClick={handleLogout}>
+            <li className="mx-1.5">
+              <NavLink
+                to="/auth"
+                onClick={() => localStorage.clear()}
+                className={({ isActive }) =>
+                  isActive ? "bg-primary" : "hover:bg-secondary"
+                }
+              >
                 <VscSignOut />
-              </label>
+              </NavLink>
             </li>
           </ul>
         </div>
