@@ -23,7 +23,7 @@ const Signup = ({ isLoading, setIsLoading }) => {
 
   return (
     <>
-      <div className="card flex-shrink-0 w-full max-w-md shadow-2xl bg-base-100">
+      <div className="card flex w-full max-w-md shadow-2xl bg-base-100">
         <div className="card-body">
           <form onSubmit={(e) => e.preventDefault()}>
             <div className="form-control">

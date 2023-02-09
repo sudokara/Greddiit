@@ -1,47 +1,30 @@
 import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../../api/axios";
 
 const Login = ({ isLoading, setIsLoading }) => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showError, setShowError] = useState(false);
 
   const navigate = useNavigate();
 
-  // const handleLogin = (e) => {
-  //   setIsLoading(true);
-  //   setTimeout(() => {
-  //     setIsLoading(false);
-  //   }, 1000);
-
-  //   if (email === "admin" && password === "admin") {
-  //     localStorage.setItem(
-  //       "MIICXAIBAAKBgQCXGAO6Lh9QhTHDMa1T",
-  //       "UV51D7fGZIR8fW6KpEGCFRQ+ae2AjXQj"
-  //     );
-  //     navigate("/me", { replace: true });
-  //   } else {
-  //     setShowError(true);
-  //   }
-  // };
-
   const handleLogin = (e) => {
-    // const res = axios
-    //   .post("http://localhost:5000/auth", {
-    //     username: email,
-    //     password: password,
-    //   })
-    //   .then((res) => console.log(res.data?.accessJWT))
-    //   .catch((err) => console.log(err));
-    (async () => {
-      const res = axios.post("http://localhost:5000/auth", {
-        username: email,
-        password: password,
-      });
-      console.log(res);
-    })();
+    setShowError(false);
+    setIsLoading(true);
+    axios
+      .post("/auth", { username, password })
+      .then((response) => {
+        // console.log(response?.data?.accessJWT);
+        localStorage.setItem("greddiit-access-token", response.data.accessJWT);
+        navigate("/me", { replace: true });
+      })
+      .catch((err) => {
+        // console.error(err);
+        setShowError(true);
+      })
+      .then(() => setIsLoading(false));
   };
 
   return (
@@ -54,14 +37,12 @@ const Login = ({ isLoading, setIsLoading }) => {
               <span className="label-text">Username</span>
             </label>
             <input
-              // type="email"
               type="text"
-              // placeholder="example@example.com"
               placeholder="admin"
               className="input input-bordered active:border-indigo-500/100 hover:border-indigo-500/100 focus:border-indigo-500/100"
-              value={email}
+              value={username}
               disabled={isLoading}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => setUsername(e.target.value)}
               required
             />
           </div>
@@ -106,7 +87,7 @@ const Login = ({ isLoading, setIsLoading }) => {
             </div>
             <div className={`form-control mt-6`}>
               <button
-                disabled={!email || !password}
+                disabled={!username || !password}
                 className={`btn btn-primary ${isLoading ? "loading" : ""}`}
                 onClick={handleLogin}
               >
