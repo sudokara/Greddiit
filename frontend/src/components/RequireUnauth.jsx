@@ -11,7 +11,7 @@ const RequireUnauth = ({ children, redirectTo }) => {
 
   useEffect(() => {
       axiosPrivate
-        .get("/auth/check")
+        .get("/api/auth/check")
         .then((response) => {
           console.log(response);
           if (response.status === 200) {

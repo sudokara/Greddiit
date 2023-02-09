@@ -14,7 +14,7 @@ const Login = ({ isLoading, setIsLoading }) => {
     setShowError(false);
     setIsLoading(true);
     axios
-      .post("/auth", { username, password })
+      .post("/api/auth", { username, password })
       .then((response) => {
         // console.log(response?.data?.accessJWT);
         localStorage.setItem("greddiit-access-token", response.data.accessJWT);

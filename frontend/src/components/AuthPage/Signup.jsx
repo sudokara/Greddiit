@@ -20,7 +20,7 @@ const Signup = ({ isLoading, setIsLoading }) => {
     setShowError(false);
     setIsLoading(true);
     axios
-      .post("/auth/register", {
+      .post("/api/auth/register", {
         firstname: firstName,
         lastname: lastName,
         email,
