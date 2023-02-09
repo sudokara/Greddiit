@@ -1,45 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-// import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import RequireAuth from "./components/RequireAuth";
-import RequireUnauth from "./components/RequireUnauth";
-import Authorize from "./components/AuthPage/Authorize";
-import Profile from "./components/ProfilePage/Profile";
-import NotFound from "./components/NotFound";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import App from "./App";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <RequireAuth redirectTo={"/auth"}>
-              <Navigate to="/me" />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/auth"
-          element={
-            <RequireUnauth redirectTo={"/me"}>
-              <Authorize />
-            </RequireUnauth>
-          }
-        />
-        <Route
-          path="/me"
-          element={
-            <RequireAuth redirectTo="/auth">
-              <Profile />
-            </RequireAuth>
-          }
-        />
-        <Route path="*" element={<NotFound />} />
+        <Route path="/*" element={<App />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
