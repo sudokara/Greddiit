@@ -40,14 +40,18 @@ const Profile = () => {
             {/* The button to open modal */}
             <label htmlFor="followers-modal" className="btn w-[44]">
               Followers
-              <div className="badge ml-2 badge-secondary">{followersArr.length}</div>
+              <div className="badge ml-2 badge-secondary">
+                {followersArr.length}
+              </div>
             </label>
           </div>
           <div className="bg-base-50 w-1/2 text-center">
             {/* 0The button to open modal */}
             <label htmlFor="following-modal" className="btn w-[44]">
               Following
-              <div className="badge ml-2 badge-secondary">{followingArr.length}</div>
+              <div className="badge ml-2 badge-secondary">
+                {followingArr.length}
+              </div>
             </label>
           </div>
 
@@ -65,6 +69,7 @@ const Profile = () => {
               label="Username"
               value={username}
               setValue={setUsername}
+              isDisabled={true}
             />
 
             <Input

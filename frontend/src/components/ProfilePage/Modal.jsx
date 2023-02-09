@@ -15,8 +15,7 @@ const Modal = ({ id, heading, array }) => {
           <h3 className="text-lg font-bold">{heading}</h3>
           <ul className="list-none">
             {array.map((item) => (
-              <li className="text-center m-5" key={array.indexOf(item)}>
-                {item}
+              <li className=" m-5" key={`${array.indexOf(item)} ${id}`}>
                 <button className="btn btn-circle">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -33,6 +32,7 @@ const Modal = ({ id, heading, array }) => {
                     />
                   </svg>
                 </button>
+                {item}
               </li>
             ))}
           </ul>
