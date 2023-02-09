@@ -14,7 +14,6 @@ Backend
 - [x] save post
 - [x] unsave 
 - [x] upvote and downvote on post - where to store upvotes and downvotes?
-- [ ] change censoring from create post to get post
 - [ ] reports
 - [ ] what to do for blocked users?
 - [ ] Delete posts and reports when deleting subgreddiit
@@ -27,7 +26,6 @@ Backend
 
 
 Frontend
-- [ ] Confirm password in register form
 - [ ] Disable editing username in frontend
 - [ ] Verify password before editing profile
 
