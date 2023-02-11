@@ -29,8 +29,8 @@ const createSubgreddiit = async (req, res) => {
   const duplicateSg = await SubGreddiit.findOne({ name: req.body.name });
   //   console.log(duplicateSg);
   if (duplicateSg) {
-    return res.status(StatusCodes.BAD_REQUEST).send({
-      error: ReasonPhrases.BAD_REQUEST,
+    return res.status(StatusCodes.CONFLICT).send({
+      error: ReasonPhrases.CONFLICT,
       message: "SubGreddiit with the same name already exists",
     });
   }
@@ -489,6 +489,20 @@ const isSubMod = async (req, res) => {
     .send({ message: "You are the moderator of this subgreddiit" });
 };
 
+///
+const mySubgreddiits = async (req, res) => {
+  const username = req.user;
+
+  const foundSubs = await SubGreddiit.find(
+    { creator: username },
+    { _id: 0, __v: 0 }
+  )
+    .lean()
+    .exec();
+
+  return res.status(StatusCodes.OK).send(foundSubs);
+};
+
 module.exports = {
   createSubgreddiit,
   getSubInfo,
@@ -499,4 +513,5 @@ module.exports = {
   addJoinRequest,
   leaveSubgreddiit,
   isSubMod,
+  mySubgreddiits,
 };
