@@ -1,8 +1,11 @@
 import React from "react";
-import Navbar from "../Navbar";
-import SubgreddiitCard from "./SubgreddiitCard";
+import Navbar from "../../Navbar";
+import SubgreddiitCard from "../SubgreddiitCard";
+import { useNavigate } from "react-router-dom";
 
 const MySubgreddiits = () => {
+  const navigate = useNavigate();
+
   return (
     <>
       <Navbar />
@@ -56,6 +59,7 @@ const MySubgreddiits = () => {
         <div className="divider"></div>
 
         <div className="p-4 flex flex-row flex-wrap w-full border-2 border-sky-300">
+          
           <div className="border-2 md:w-1/2 lg:w-1/3 xl:w-1/4 border-sky-300">
             <SubgreddiitCard
               name="bangalore"
@@ -66,6 +70,7 @@ const MySubgreddiits = () => {
               bannedKeywords={["hindi", "hyderabad"]}
             />
           </div>
+
           <div className="border-2 md:w-1/2 lg:w-1/3 xl:w-1/4 border-red-300">
             <SubgreddiitCard
               name="bangalore"
@@ -73,6 +78,7 @@ const MySubgreddiits = () => {
               tags={["bangalore", "bengaluru"]}
             />
           </div>
+
           <div className="border-2 md:w-1/2 lg:w-1/3 xl:w-1/4 border-red-300">
             <SubgreddiitCard
               name="bangalore"
@@ -80,6 +86,7 @@ const MySubgreddiits = () => {
               tags={["bangalore", "bengaluru"]}
             />
           </div>
+
           <div className="border-2 md:w-1/2 lg:w-1/3 xl:w-1/4 border-red-300">
             <SubgreddiitCard
               name="bangalore"
@@ -87,6 +94,15 @@ const MySubgreddiits = () => {
               tags={["bangalore", "bengaluru"]}
             />
           </div>
+
+          <div className="border-2 md:w-1/2 lg:w-1/3 xl:w-1/4 border-red-300">
+            <SubgreddiitCard
+              name="mac"
+              description="Namma ooru"
+              tags={["bangalore", "bengaluru"]}
+            />
+          </div>
+
           <div className="border-2 md:w-1/2 lg:w-1/3 xl:w-1/4 border-red-300">
             <SubgreddiitCard
               name="bangalore"
@@ -94,13 +110,7 @@ const MySubgreddiits = () => {
               tags={["bangalore", "bengaluru"]}
             />
           </div>
-          <div className="border-2 md:w-1/2 lg:w-1/3 xl:w-1/4 border-red-300">
-            <SubgreddiitCard
-              name="bangalore"
-              description="Namma ooru"
-              tags={["bangalore", "bengaluru"]}
-            />
-          </div>
+
         </div>
       </div>
     </>
