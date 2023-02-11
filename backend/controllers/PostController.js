@@ -39,17 +39,18 @@ const createPost = async (req, res) => {
     });
   }
 
-  // censor banned keywords
+  // check if any censored words are in the title or text
   // the regex is /bannedword1|bannedword2|bannedword3/gi
   const filter = new RegExp(`${foundSubgr.banned_keywords.join("|")}`, "gi");
-  const censoredText = postText.replace(filter, "****");
-  const censoredTitle = postTitle.replace(filter, "****");
-  const isCensored = postText !== censoredText || postTitle !== censoredTitle;
+  // const censoredText = postText.replace(filter, "****");
+  // const censoredTitle = postTitle.replace(filter, "****");
+  // const isCensored = postText !== censoredText || postTitle !== censoredTitle;
+  const isCensored = filter.test(postText) || filter.test(postTitle);
 
   // add the post to the subgreddiit
   const newPost = new Post({
-    title: censoredTitle,
-    text: censoredText,
+    title: postTitle,
+    text: postText,
     posted_by: req.user,
     posted_in: subgr,
     upvotes: [req.user],
