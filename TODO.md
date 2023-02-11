@@ -2,6 +2,9 @@ Misc
 
 - [ ] Do i need to change the route for unsave to only use postid?
 - [x] change to single access token
+- [ ] Dont allow spaces in sub title and username?
+- [ ] fix typerror cant convert undefined to 
+- [ ] input validation with regex on frontend and backend
 
 # Backend
 
@@ -21,7 +24,7 @@ Misc
 - [x] check unique username and email
 - [x] check if user exists when verifying jwt
 - [x] and not when creating
-- [ ] censor when returning
+- [ ] censor when returning post
 
 - [ ] reports
 - [ ] what to do for blocked users?
@@ -43,15 +46,19 @@ Misc
 
 ## My Subgreddiits page:
 
-- [ ] Create subgreddiit
-- [ ] My subgreddiits
+- [x] Create subgreddiit
+- [x] Display My subgreddiits
 - [ ] Search, filter, sort
-      delete subgreddiit: BsTrash
-      go to subgreddiit: BsArrowUpRightSquare
-      create subgreddiit: CgFolderAdd
-      search: BiSearch
-      Subgreddit card: https://daisyui.com/components/card/#card-with-image-overlay
-      Limit description to first n (50?) characters
+add buttons:
+    - [x] delete subgreddiit: BsTrash
+    - [x] go to subgreddiit: BsArrowUpRightSquare
+    - [x]  create subgreddiit: CgFolderAdd
+    - [x]  search: BiSearch
+    - [x]  Subgreddit card: https://daisyui.com/components/card/#card-with-image-overlay
+    - [x]  Limit description to first 30 characters
+
+    - [x] why doesnt modal stay open after creating
+    loading for delete and -[x] create subg
 
 Random photo : https://source.unsplash.com/random
 
@@ -100,3 +107,10 @@ BiDownvote
 
 ## Keyboard shortcuts:
 react-keyboard-event-handler
+
+## Regex
+Tags: lower case, single word, comma separated, no spaces, letters and numbers only
+
+```js
+const pattern = /^[a-z0-9]+(,[a-z0-9]+)*$/;
+```

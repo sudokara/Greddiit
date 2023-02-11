@@ -1,7 +1,7 @@
 import React from "react";
 import { BsArrowRight, BsCardText, BsTrash } from "react-icons/bs";
 import { FiUsers } from "react-icons/fi";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const SubgreddiitCard = ({
   name,
@@ -15,8 +15,8 @@ const SubgreddiitCard = ({
   const navigate = useNavigate();
 
   return (
-    <div className="flex w-full border-2 border-l-indigo-50">
-      <div className="card m-5 bg-base-100 shadow-xl">
+    <div className="flex w-full">
+      <div className="card card-compact w-96 m-5 bg-base-100 shadow-xl">
         <figure
           className="hover:cursor-pointer"
           onClick={() => navigate("/r/" + name)}
@@ -24,13 +24,17 @@ const SubgreddiitCard = ({
           <img src="https://source.unsplash.com/random" alt="Shoes" />
         </figure>
         <div className="card-body">
-          <h2 className="text-center font-bold text-2xl text-primary">
+          <h2 className="text-center font-bold text-3xl text-primary">
             r/{name}
           </h2>
 
-          <p className="text-center">{description}</p>
+          <p className="text-center text-lg">
+            {description.length > 30
+              ? description.slice(0, 30) + "..."
+              : description}
+          </p>
 
-          <div className="flex flex-row justify-around">
+          <div className="flex flex-row justify-around text-xl font-semibold">
             <div>
               <FiUsers style={{ display: "inline" }} /> : {numPeople}
             </div>
@@ -40,11 +44,10 @@ const SubgreddiitCard = ({
             </div>
           </div>
 
-          <div className="text-center">
-            Banned Keywords:{" "}
-            {bannedKeywords && bannedKeywords.length
-              ? bannedKeywords.join(", ")
-              : ""}
+          <div className="text-center text-lg">
+            {bannedKeywords && bannedKeywords.length && bannedKeywords !== " "
+              ? "Banned Keywords: " + bannedKeywords.join(", ")
+              : "No Banned Keywords"}
           </div>
 
           <div

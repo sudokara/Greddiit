@@ -1,10 +1,54 @@
-import React from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import React, { useState } from "react";
+import { axiosPrivate } from "../../../api/axios";
+import Loading from "../../Loading";
 import Navbar from "../../Navbar";
+import NotFound from "../../NotFound";
 import SubgreddiitCard from "../SubgreddiitCard";
-import { useNavigate } from "react-router-dom";
+import CreateSubgreddiit from "./CreateSubgreddiit";
+
+const debug = false;
 
 const MySubgreddiits = () => {
-  const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+
+  const getSubs = async () => {
+    try {
+      const response = await axiosPrivate.get("/api/gr/mysubs");
+      if (debug) console.log(response.data);
+      return response.data;
+    } catch (err) {
+      if (debug) console.log(err);
+      return null;
+    }
+  };
+
+  const queryClient = useQueryClient();
+
+  const mysubsQuery = useQuery({
+    queryKey: ["mysubs"],
+    queryFn: getSubs,
+  });
+
+  const handleSubDelete = (subgr) => {
+    axiosPrivate
+      .delete(`/api/gr/delete/${subgr}`)
+      .then((response) => console.log(response))
+      .catch((err) => console.error(err));
+  };
+
+  const deleteSubMutation = useMutation({
+    mutationFn: (subgr) => handleSubDelete(subgr),
+    onSuccess: () => {
+      setTimeout(() => {
+        queryClient.invalidateQueries(["mysubs"]);
+      }, 1000);
+    },
+  });
+
+  if (mysubsQuery.isLoading || !mysubsQuery.data) return <Loading />;
+
+  if (mysubsQuery.isError) return <NotFound />;
 
   return (
     <>
@@ -12,15 +56,24 @@ const MySubgreddiits = () => {
 
       <div className="flex flex-col w-full justify-center">
         <div className="p-4 text-center flex flex-col w-full justify-center">
-
           <div className="w-2/3 m-5">
-            <button className="btn btn-wide btn-primary">Create</button>
+            <button
+              className="btn btn-wide btn-primary"
+              onClick={() => setShowModal(true)}
+            >
+              Create
+            </button>
+            {/* <label
+              htmlFor="create-subgreddiit-modal"
+              className="btn btn-primary btn-wide"
+            >
+              open modal
+            </label> */}
           </div>
 
           <div className="flex justify-center border-red-600 border-2">
             <div className="form-control">
               <div className="input-group">
-
                 <input
                   type="text"
                   placeholder="Search…"
@@ -42,77 +95,46 @@ const MySubgreddiits = () => {
                     />
                   </svg>
                 </button>
-
               </div>
             </div>
           </div>
 
           <div className="flex flex-row justify-around">
-
             <div>tags</div>
-            
+
             <div>sort</div>
-          
           </div>
         </div>
 
         <div className="divider"></div>
 
-        <div className="p-4 flex flex-row flex-wrap w-full border-2 border-sky-300">
-          
-          <div className="border-2 md:w-1/2 lg:w-1/3 xl:w-1/4 border-sky-300">
-            <SubgreddiitCard
-              name="bangalore"
-              description="Namma ooru bengaluru namma ooru; e sala cup namde will never work; im intentionally biggifying this description to see how it looks; the quick brown fox jumps over the lazy dog"
-              tags={["bangalore", "bengaluru", "silicon city", "another tag", "yet another tag"]}
-              numPeople={23423}
-              numPosts={37924}
-              bannedKeywords={["hindi", "hyderabad"]}
-            />
-          </div>
-
-          <div className="border-2 md:w-1/2 lg:w-1/3 xl:w-1/4 border-red-300">
-            <SubgreddiitCard
-              name="bangalore"
-              description="Namma ooru"
-              tags={["bangalore", "bengaluru"]}
-            />
-          </div>
-
-          <div className="border-2 md:w-1/2 lg:w-1/3 xl:w-1/4 border-red-300">
-            <SubgreddiitCard
-              name="bangalore"
-              description="Namma ooru"
-              tags={["bangalore", "bengaluru"]}
-            />
-          </div>
-
-          <div className="border-2 md:w-1/2 lg:w-1/3 xl:w-1/4 border-red-300">
-            <SubgreddiitCard
-              name="bangalore"
-              description="Namma ooru"
-              tags={["bangalore", "bengaluru"]}
-            />
-          </div>
-
-          <div className="border-2 md:w-1/2 lg:w-1/3 xl:w-1/4 border-red-300">
-            <SubgreddiitCard
-              name="mac"
-              description="Namma ooru"
-              tags={["bangalore", "bengaluru"]}
-            />
-          </div>
-
-          <div className="border-2 md:w-1/2 lg:w-1/3 xl:w-1/4 border-red-300">
-            <SubgreddiitCard
-              name="bangalore"
-              description="Namma ooru"
-              tags={["bangalore", "bengaluru"]}
-            />
-          </div>
-
+        <div className="p-4 flex flex-row flex-wrap w-full justify-around">
+          {mysubsQuery.data.map((sub, idx) => (
+            <div
+              key={`${Math.floor(Math.random() * 100)}-sub-${sub?.name}`}
+              className="md:w-1/2 lg:w-1/3 xl:w-1/4"
+            >
+              <SubgreddiitCard
+                name={sub?.name}
+                description={sub?.description}
+                numPeople={sub?.num_people}
+                numPosts={sub?.num_posts}
+                tags={Array.isArray(sub?.tags) ? sub?.tags : []}
+                bannedKeywords={
+                  Array.isArray(sub?.banned_keywords)
+                    ? sub?.banned_keywords
+                    : []
+                }
+                handleSubDelete={(e) => {
+                  e.preventDefault();
+                  deleteSubMutation.mutate(sub?.name);
+                }}
+              />
+            </div>
+          ))}
         </div>
       </div>
+      {showModal ? <CreateSubgreddiit setShowModal={setShowModal} /> : ""}
     </>
   );
 };
