@@ -84,7 +84,18 @@ const createPost = async (req, res) => {
     .send({ message: "Post successfully created", isCensored: isCensored });
 };
 
-const getPosts = async (req, res) => {};
+const getPosts = async (req, res) => {
+  const subgr = req.params.subgr;
+  const username = req.user;
+
+  const foundSubgr = await SubGreddiit.findOne({ name: subgr });
+  if (!foundSubgr) {
+    return res.status(StatusCodes.BAD_REQUEST).send({
+      error: ReasonPhrases.BAD_REQUEST,
+      message: "Subgreddiit not found",
+    });
+  }
+};
 
 /// @POST /psot/comment/:subgr/:postid
 /// Add a comment to a post
