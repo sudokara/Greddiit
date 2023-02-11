@@ -14,6 +14,8 @@ const Navbar = () => {
     "/r": "Subgreddiits"
   };
 
+  const currentPage = pageTitles[location.pathname] || "";
+
   return (
     <>
       {/* Navbar */}
@@ -33,7 +35,7 @@ const Navbar = () => {
         </div>
 
         <div className="flex-1 text-xl text-primary font-bold">
-          {pageTitles[location.pathname]}
+          {currentPage}
         </div>
         
         <div className="flex-none">
