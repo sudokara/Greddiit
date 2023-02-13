@@ -6,7 +6,7 @@ import Profile from "./components/ProfilePage/Profile";
 import NotFound from "./components/NotFound";
 import MySubgreddiits from "./components/Subgreddiits/MySubgreddiits/MySubgreddiits";
 import SavedPosts from "./components/SavedPosts/SavedPosts";
-import Subgreddiits from "./components/Subgreddiits/AllSubgreddiits/Subgreddiits";
+import AllSubgreddiits from "./components/Subgreddiits/AllSubgreddiits/AllSubgreddiits";
 import Subgreddiit from "./components/Subgreddiits/Subgreddiit/Subgreddiit";
 
 function App() {
@@ -48,7 +48,7 @@ function App() {
         path="/r"
         element={
           <RequireAuth redirectTo="/auth">
-            <Subgreddiits />
+            <AllSubgreddiits />
           </RequireAuth>
         }
       />
