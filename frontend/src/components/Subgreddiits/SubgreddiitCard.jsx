@@ -2,6 +2,9 @@ import React from "react";
 import { BsArrowRight, BsCardText, BsTrash } from "react-icons/bs";
 import { FiUsers } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import { axiosPrivate } from "../../api/axios";
+import { useMutation } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 
 const SubgreddiitCard = ({
   name,
@@ -10,9 +13,32 @@ const SubgreddiitCard = ({
   numPosts,
   bannedKeywords,
   tags,
-  handleSubDelete,
+  deleteLoading,
+  setDeleteLoading,
 }) => {
   const navigate = useNavigate();
+
+  const queryClient = useQueryClient();
+
+  const handleSubDelete = (subgr) => {
+    setDeleteLoading(true);
+    axiosPrivate
+      .delete(`/api/gr/delete/${subgr}`)
+      .then((response) => console.log(response))
+      .catch((err) => console.error(err));
+  };
+
+  const deleteSubMutation = useMutation({
+    mutationFn: (subgr) => {
+      handleSubDelete(subgr);
+      setDeleteLoading(false);
+    },
+    onSuccess: () => {
+      setTimeout(() => {
+        queryClient.invalidateQueries(["mysubs"]);
+      }, 1000);
+    },
+  });
 
   return (
     <div className="flex w-full">
@@ -67,10 +93,16 @@ const SubgreddiitCard = ({
           <div className="flex flex-row justify-around">
             <div>
               <button
-                className="btn btn-square btn-outline mt-3"
-                onClick={handleSubDelete}
+                className={`btn btn-square btn-outline mt-3 ${
+                  deleteLoading ? "loading" : ""
+                }`}
+                onClick={(e) => {
+                  // e.preventDefault();
+                  setDeleteLoading(true);
+                  deleteSubMutation.mutate(name);
+                }}
               >
-                <BsTrash />
+                {deleteLoading ? "" : <BsTrash />}
               </button>
             </div>
 

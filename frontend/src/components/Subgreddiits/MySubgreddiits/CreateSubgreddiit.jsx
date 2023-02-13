@@ -97,6 +97,7 @@ const CreateSubgreddiit = ({ setShowModal }) => {
                   placeholder="dracula"
                   className="input input-bordered active:border-primary hover:border-primary focus:border-primary m-1"
                   ref={nameRef}
+                  autoFocus
                   onChange={handleCheckValid}
                 />
               </label>

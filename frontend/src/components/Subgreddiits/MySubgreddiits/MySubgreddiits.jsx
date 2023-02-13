@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { axiosPrivate } from "../../../api/axios";
 import Loading from "../../Loading";
@@ -11,6 +11,7 @@ const debug = false;
 
 const MySubgreddiits = () => {
   const [showModal, setShowModal] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const getSubs = async () => {
     try {
@@ -23,27 +24,11 @@ const MySubgreddiits = () => {
     }
   };
 
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
 
   const mysubsQuery = useQuery({
     queryKey: ["mysubs"],
     queryFn: getSubs,
-  });
-
-  const handleSubDelete = (subgr) => {
-    axiosPrivate
-      .delete(`/api/gr/delete/${subgr}`)
-      .then((response) => console.log(response))
-      .catch((err) => console.error(err));
-  };
-
-  const deleteSubMutation = useMutation({
-    mutationFn: (subgr) => handleSubDelete(subgr),
-    onSuccess: () => {
-      setTimeout(() => {
-        queryClient.invalidateQueries(["mysubs"]);
-      }, 1000);
-    },
   });
 
   if (mysubsQuery.isLoading || !mysubsQuery.data) return <Loading />;
@@ -63,12 +48,6 @@ const MySubgreddiits = () => {
             >
               Create
             </button>
-            {/* <label
-              htmlFor="create-subgreddiit-modal"
-              className="btn btn-primary btn-wide"
-            >
-              open modal
-            </label> */}
           </div>
 
           <div className="flex justify-center border-red-600 border-2">
@@ -125,10 +104,8 @@ const MySubgreddiits = () => {
                     ? sub?.banned_keywords
                     : []
                 }
-                handleSubDelete={(e) => {
-                  e.preventDefault();
-                  deleteSubMutation.mutate(sub?.name);
-                }}
+                deleteLoading={deleteLoading}
+                setDeleteLoading={setDeleteLoading}
               />
             </div>
           ))}
