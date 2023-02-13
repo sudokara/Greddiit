@@ -19,7 +19,7 @@ const Navbar = () => {
   return (
     <>
       {/* Navbar */}
-      <div className="navbar bg-base-100 shadow-2xl mt-3">
+      <div className="navbar flex-wrap bg-base-100 shadow-2xl mt-3 sticky top-0 z-50">
         <div className="avatar mx-3">
           <NavLink className="w-8 rounded" to="/">
             <img src={require("../assets/ghosts.png")} alt="Greddiit Ghosts" />
