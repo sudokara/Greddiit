@@ -1,20 +1,65 @@
-import React from "react";
+import React, { useEffect, useCallback } from "react";
 import { VscSignOut } from "react-icons/vsc";
 import { BsPerson, BsBookmarks, BsBinoculars } from "react-icons/bs";
 import { FiAnchor } from "react-icons/fi";
-import { NavLink, useLocation } from "react-router-dom";
+import { useNavigate, NavLink, useLocation } from "react-router-dom";
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const location = useLocation();
 
   const pageTitles = {
     "/me": "My Profile",
     "/myr": "My Subgreddiits",
     "/saved": "Saved Posts",
-    "/r": "Subgreddiits"
+    "/r": "Subgreddiits",
   };
 
-  const currentPage = pageTitles[location.pathname] || "";
+  const subNameRegex = /\/r\/([^\/]+)/; // get everything between /r and the next /
+  let currentPage = pageTitles[location.pathname] || "";
+  const subName = subNameRegex.exec(location.pathname) || "";
+  if (subName) {
+    currentPage = subName[0].slice(1).replace("%20", " ");
+  }
+
+  // console.log(
+  //   subNameRegex.exec(location.pathname)
+  //     ? subNameRegex.exec(location.pathname)[1]
+  //     : ""
+  // );
+
+  const handleKeyPress = useCallback((event) => {
+    if (
+      event.target.nodeName !== "INPUT" &&
+      event.target.nodeName !== "TEXTAREA"
+    ) {
+      // console.log(`Key pressed: ${event.key}`);
+      switch (event.key) {
+        case "p":
+          navigate("/me");
+          break;
+        case "s":
+          navigate("/saved");
+          break;
+        case "m":
+          navigate("/myr");
+          break;
+        case "a":
+          navigate("/r");
+          break;
+        default:
+          break;
+      }
+    }
+  }, [navigate]);
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyPress);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [handleKeyPress]);
 
   return (
     <>
@@ -37,7 +82,7 @@ const Navbar = () => {
         <div className="flex-1 text-xl text-primary font-bold">
           {currentPage}
         </div>
-        
+
         <div className="flex-none">
           <ul className="menu menu-horizontal px-1">
             {/* <li>
@@ -68,7 +113,7 @@ const Navbar = () => {
                 <FiAnchor />
               </NavLink>
             </li>
-            
+
             <li className="mx-1.5">
               <NavLink
                 to="/saved"
