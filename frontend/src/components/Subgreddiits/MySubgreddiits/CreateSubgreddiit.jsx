@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useRef, useState } from "react";
 import { axiosPrivate } from "../../../api/axios";
+import jwt_decode from "jwt-decode";
+
 import Loading from "../../Loading";
 
 const CreateSubgreddiit = ({ setShowModal }) => {
@@ -14,6 +16,9 @@ const CreateSubgreddiit = ({ setShowModal }) => {
   const [isValid, setIsValid] = useState(false);
   const [isLoading, setisLoading] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState("");
+  const [username, setUsername] = useState(
+    jwt_decode(localStorage.getItem("greddiit-access-token")).username
+  );
 
   const tagPattern = /^$|^[a-z0-9]+(,[a-z0-9]+)*$/;
   const bannedPattern = /^$|^[a-zA-Z0-9]+(,[a-zA-Z0-9]+)*$/;
@@ -59,7 +64,7 @@ const CreateSubgreddiit = ({ setShowModal }) => {
     mutationFn: handleCreateSubgreddiit,
     onSuccess: () => {
       setTimeout(() => {
-        queryClient.invalidateQueries(["mysubs"]);
+        queryClient.invalidateQueries(["mysubs", username]);
       }, 1000);
     },
   });

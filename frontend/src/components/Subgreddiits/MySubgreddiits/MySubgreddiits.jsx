@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { axiosPrivate } from "../../../api/axios";
+import jwt_decode from "jwt-decode";
+
 import Loading from "../../Loading";
 import Navbar from "../../Navbar";
 import NotFound from "../../NotFound";
@@ -12,6 +14,9 @@ const debug = false;
 const MySubgreddiits = () => {
   const [showModal, setShowModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [username, setUsername] = useState(
+    jwt_decode(localStorage.getItem("greddiit-access-token")).username
+  );
 
   const getSubs = async () => {
     try {
@@ -27,7 +32,7 @@ const MySubgreddiits = () => {
   // const queryClient = useQueryClient();
 
   const mysubsQuery = useQuery({
-    queryKey: ["mysubs"],
+    queryKey: ["mysubs", username],
     queryFn: getSubs,
   });
 
