@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { axiosPrivate } from "../../../api/axios";
 import { AiOutlinePlus } from "react-icons/ai";
 import jwt_decode from "jwt-decode";
+import Fuse from "fuse.js";
 
 import Loading from "../../Loading";
 import Navbar from "../../Navbar";
@@ -15,9 +16,10 @@ const debug = false;
 const MySubgreddiits = () => {
   const [showModal, setShowModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [username, setUsername] = useState(
-    jwt_decode(localStorage.getItem("greddiit-access-token")).username
-  );
+  const [query, setQuery] = useState("");
+  const username = jwt_decode(
+    localStorage.getItem("greddiit-access-token")
+  ).username;
 
   const getSubs = async () => {
     try {
@@ -40,6 +42,15 @@ const MySubgreddiits = () => {
   if (mysubsQuery.isLoading || !mysubsQuery.data) return <Loading />;
 
   if (mysubsQuery.isError) return <NotFound />;
+
+  const mysubsFuse = new Fuse(mysubsQuery.data, {
+    keys: ["name"],
+    useExtendedSearch: true,
+  });
+
+  const filteredSubs = query
+    ? mysubsFuse.search(query).map((entry) => entry.item)
+    : mysubsQuery.data;
 
   return (
     <>
@@ -64,6 +75,8 @@ const MySubgreddiits = () => {
                   type="text"
                   placeholder="Search…"
                   className="input input-bordered"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
                 />
                 <button className="btn btn-square">
                   <svg
@@ -95,7 +108,8 @@ const MySubgreddiits = () => {
         <div className="divider"></div>
 
         <div className="p-4 flex flex-row flex-wrap w-full justify-around">
-          {mysubsQuery.data.map((sub, idx) => (
+          {/* {mysubsQuery.data.map((sub, idx) => ( */}
+          {filteredSubs.map((sub, idx) => (
             <div
               key={`${Math.floor(Math.random() * 100)}-sub-${sub?.name}`}
               className="md:w-1/2 lg:w-1/3 xl:w-1/4"

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { axiosPrivate } from "../../../api/axios";
 import jwt_decode from "jwt-decode";
+import Fuse from "fuse.js";
 
 import Navbar from "../../Navbar";
 import Loading from "../../Loading";
@@ -11,10 +12,11 @@ import SubgreddiitCard from "../SubgreddiitCard";
 const debug = false;
 
 const AllSubgreddiits = () => {
-  const [username, setUsername] = useState(
-    jwt_decode(localStorage.getItem("greddiit-access-token")).username
-  );
+  const username = jwt_decode(
+    localStorage.getItem("greddiit-access-token")
+  ).username;
   const [leaveLoading, setLeaveLoading] = useState(false);
+  const [query, setQuery] = useState("");
 
   const getAllSubs = async () => {
     try {
@@ -39,19 +41,42 @@ const AllSubgreddiits = () => {
 
   if (allSubsQuery.isError) return <NotFound />;
 
+  const joinedSubsFuse = new Fuse(allSubsQuery.data.joined_subs, {
+    keys: ["name"],
+    useExtendedSearch: true,
+  });
+
+  const notJoinedSubsFuse = new Fuse(allSubsQuery.data.not_joined_subs, {
+    keys: ["name"],
+    useExtendedSearch: true,
+  });
+
+  const joinedSubs = query
+    ? joinedSubsFuse.search(query).map((entry) => entry.item)
+    : allSubsQuery.data.joined_subs;
+
+  const notJoinedSubs = query
+    ? notJoinedSubsFuse.search(query).map((entry) => entry.item)
+    : allSubsQuery.data.not_joined_subs;
+
+  // console.log(joinedSubs);
+  // console.log(notJoinedSubs);
+
   return (
     <>
       <Navbar />
 
       <div className="flex flex-col w-full justify-center">
         <div className="p-4 text-center flex flex-col w-full justify-center">
-          <div className="flex justify-center border-red-600 border-2">
+          <div className="flex justify-center">
             <div className="form-control">
               <div className="input-group">
                 <input
                   type="text"
                   placeholder="Search…"
                   className="input input-bordered"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
                 />
                 <button className="btn btn-square">
                   <svg
@@ -86,7 +111,8 @@ const AllSubgreddiits = () => {
 
         {/* joined subs */}
         <div className="p-4 flex flex-row flex-wrap w-full justify-around">
-          {allSubsQuery.data.joined_subs.map((sub, idx) => (
+          {/* {allSubsQuery.data.joined_subs.map((sub, idx) => ( */}
+          {joinedSubs.map((sub, idx) => (
             <div
               key={`${Math.floor(Math.random() * 100)}-sub-${idx}-${sub?.name}`}
               className="md:w-1/2 lg:w-1/3 xl:w-1/4"
@@ -120,7 +146,8 @@ const AllSubgreddiits = () => {
 
         {/* not joined subs */}
         <div className="p-4 flex flex-row flex-wrap w-full justify-around">
-          {allSubsQuery.data.not_joined_subs.map((sub, idx) => (
+          {/* {allSubsQuery.data.not_joined_subs.map((sub, idx) => ( */}
+          {notJoinedSubs.map((sub, idx) => (
             <div
               key={`${Math.floor(Math.random() * 100)}-sub-${idx}-${sub?.name}`}
               className="md:w-1/2 lg:w-1/3 xl:w-1/4"
