@@ -2,9 +2,10 @@ Misc
 
 - [ ] Do i need to change the route for unsave to only use postid?
 - [x] change to single access token
-- [ ] Dont allow spaces in sub title and username?
+- [ ] Dont allow spaces and special characters in sub title and username?
 - [ ] fix typerror cant convert undefined to 
 - [ ] input validation with regex on frontend and backend
+- [ ] restrict users, join reqs, stats, reports to mod
 
 # Backend
 
@@ -48,7 +49,9 @@ Misc
 
 - [x] Create subgreddiit
 - [x] Display My subgreddiits
-- [ ] Search, filter, sort
+- [x] Search
+- [ ] filter
+- [ ] sort
 add buttons:
     - [x] delete subgreddiit: BsTrash
     - [x] go to subgreddiit: BsArrowUpRightSquare
@@ -58,32 +61,26 @@ add buttons:
     - [x]  Limit description to first 30 characters
 
     - [x] why doesnt modal stay open after creating
-    loading for delete and -[x] create subg
+    - [ ] loading for delete 
+    - [x] create subg
 
 Random photo : https://source.unsplash.com/random
 
-tags:
+## All Subgreddiits:
+- [ ] make proper dialog box for join request not sent
+- [ ] why isnt loading for join req/ leave working
+- [ ] if join req gets rejected?? or error because left??
 
-```html
-<div class="flex justify-between ">
-  <div class="pill bg-gray-400 rounded-full text-xs px-4 py-1 mr-2">
-    #Express
-  </div>
-  <div class="pill bg-gray-400 rounded-full text-xs px-4 py-1 mr-2">
-    #TailwindCSS
-  </div>
-</div>
-```
-or
+tags:
 ```html
 <div className="badge badge-accent badge-outline">accent</div>
 ```
 
 ## Subgreddiit page navbar:
-Users: FiUsers
-Join Requests: AiOutlineUsergroupAdd
-Stats: ImStatsDots
-Reports: GoReport
+- [x] Users: FiUsers
+- [x] Join Requests: AiOutlineUsergroupAdd
+- [x] Stats: ImStatsDots
+- [x] Reports: GoReport
 
 
 ## Subgreddit page:
