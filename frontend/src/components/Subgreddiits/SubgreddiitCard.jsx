@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { BsArrowRight, BsCardText, BsTrash } from "react-icons/bs";
+import { ImExit } from "react-icons/im";
 import { FiUsers } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { axiosPrivate } from "../../api/axios";
 import { useMutation } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
+import jwt_decode from "jwt-decode";
 
 const SubgreddiitCard = ({
   name,
@@ -13,15 +15,22 @@ const SubgreddiitCard = ({
   numPosts,
   bannedKeywords,
   tags,
-  deleteLoading,
-  setDeleteLoading,
+  actionLoading,
+  setActionLoading,
+  showLeave,
+  showDelete,
+  showDisabledLeave,
 }) => {
   const navigate = useNavigate();
+
+  const [username, setUsername] = useState(
+    jwt_decode(localStorage.getItem("greddiit-access-token")).username
+  );
 
   const queryClient = useQueryClient();
 
   const handleSubDelete = (subgr) => {
-    setDeleteLoading(true);
+    setActionLoading(true);
     axiosPrivate
       .delete(`/api/gr/delete/${subgr}`)
       .then((response) => console.log(response))
@@ -31,11 +40,33 @@ const SubgreddiitCard = ({
   const deleteSubMutation = useMutation({
     mutationFn: (subgr) => {
       handleSubDelete(subgr);
-      setDeleteLoading(false);
+      setActionLoading(false);
     },
     onSuccess: () => {
       setTimeout(() => {
-        queryClient.invalidateQueries(["mysubs"]);
+        queryClient.invalidateQueries(["mysubs", username]);
+        queryClient.invalidateQueries(["allsubs", username]);
+      }, 1000);
+    },
+  });
+
+  const handleSubLeave = (subgr) => {
+    setActionLoading(true);
+    axiosPrivate
+      .get(`/api/gr/leave/${subgr}`)
+      .then((response) => console.log(response))
+      .catch((err) => console.error(err));
+  };
+
+  const leaveSubMutation = useMutation({
+    mutationFn: (subgr) => {
+      handleSubLeave(subgr);
+      setActionLoading(false);
+    },
+    onSuccess: () => {
+      setTimeout(() => {
+        queryClient.invalidateQueries(["mysubs", username]);
+        queryClient.invalidateQueries(["allsubs", username]);
       }, 1000);
     },
   });
@@ -91,20 +122,39 @@ const SubgreddiitCard = ({
           </div>
 
           <div className="flex flex-row justify-around">
-            <div>
-              <button
-                className={`btn btn-square btn-outline mt-3 ${
-                  deleteLoading ? "loading" : ""
-                }`}
-                onClick={(e) => {
-                  // e.preventDefault();
-                  setDeleteLoading(true);
-                  deleteSubMutation.mutate(name);
-                }}
-              >
-                {deleteLoading ? "" : <BsTrash />}
-              </button>
-            </div>
+            {showLeave ? (
+              <div>
+                <button
+                  disabled={showDisabledLeave}
+                  className={`btn btn-square btn-outline mt-3 ${
+                    actionLoading ? "loading" : ""
+                  }`}
+                  onClick={(e) => {
+                    setActionLoading(true);
+                    leaveSubMutation.mutate(name);
+                  }}
+                >
+                  <ImExit />
+                </button>
+              </div>
+            ) : showDelete ? (
+              <div>
+                <button
+                  className={`btn btn-square btn-outline mt-3 ${
+                    actionLoading ? "loading" : ""
+                  }`}
+                  onClick={(e) => {
+                    // e.preventDefault();
+                    setActionLoading(true);
+                    deleteSubMutation.mutate(name);
+                  }}
+                >
+                  {actionLoading ? "" : <BsTrash />}
+                </button>
+              </div>
+            ) : (
+              ""
+            )}
 
             <div>
               <button

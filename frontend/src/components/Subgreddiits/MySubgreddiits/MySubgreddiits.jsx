@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { axiosPrivate } from "../../../api/axios";
+import { AiOutlinePlus } from "react-icons/ai";
 import jwt_decode from "jwt-decode";
 
 import Loading from "../../Loading";
@@ -46,16 +47,17 @@ const MySubgreddiits = () => {
 
       <div className="flex flex-col w-full justify-center">
         <div className="p-4 text-center flex flex-col w-full justify-center">
-          <div className="w-2/3 m-5">
+          <div className="w-full my-5 flex justify-center">
             <button
-              className="btn btn-wide btn-primary"
+              className="btn btn-wide btn-primary gap-2"
               onClick={() => setShowModal(true)}
             >
-              Create
+              <AiOutlinePlus />
+              Create Sub
             </button>
           </div>
 
-          <div className="flex justify-center border-red-600 border-2">
+          <div className="flex justify-center">
             <div className="form-control">
               <div className="input-group">
                 <input
@@ -109,8 +111,11 @@ const MySubgreddiits = () => {
                     ? sub?.banned_keywords
                     : []
                 }
-                deleteLoading={deleteLoading}
-                setDeleteLoading={setDeleteLoading}
+                actionLoading={deleteLoading}
+                setActionLoading={setDeleteLoading}
+                showLeave={false}
+                showDelete={true}
+                showDisabledLeave={false}
               />
             </div>
           ))}
