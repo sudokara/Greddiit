@@ -4,7 +4,6 @@ const User = require("../models/UserModel");
 const StatusCodes = require("http-status-codes").StatusCodes;
 const ReasonPhrases = require("http-status-codes").ReasonPhrases;
 
-
 /// @POST /gr/create
 /// Create a subgreddiit
 const createSubgreddiit = async (req, res) => {
@@ -103,12 +102,29 @@ const getSubInfo = async (req, res) => {
 
 /// @GET /gr/users/:subgr
 /// Get the users of subgr
+/// Only for moderator
 const getSubUsers = async (req, res) => {
+  const subgr = req.params.subgr;
+
   if (process.env.MODE === "dev") {
     console.log(getSubUsers);
   }
 
-  const subgr = req.params.subgr;
+  // verify if the requester is moderator
+  const modStatus = await verifyModerator(req.user, subgr);
+  if (modStatus === StatusCodes.BAD_REQUEST) {
+    return res.status(StatusCodes.BAD_REQUEST).send({
+      error: StatusCodes.BAD_REQUEST,
+      message: "Could not find subgreddiit",
+    });
+  }
+  if (modStatus === StatusCodes.FORBIDDEN) {
+    return res.status(StatusCodes.FORBIDDEN).send({
+      error: ReasonPhrases.FORBIDDEN,
+      message: "You are not the moderator of this subgreddiit",
+    });
+  }
+
   const foundSubgr = await SubGreddiit.findOne(
     { name: subgr },
     {
@@ -116,12 +132,12 @@ const getSubUsers = async (req, res) => {
     }
   );
 
-  if (!foundSubgr) {
-    return res.status(StatusCodes.BAD_REQUEST).send({
-      error: ReasonPhrases.BAD_REQUEST,
-      message: "Subgreddiit not found",
-    });
-  }
+  // if (!foundSubgr) {
+  //   return res.status(StatusCodes.BAD_REQUEST).send({
+  //     error: ReasonPhrases.BAD_REQUEST,
+  //     message: "Subgreddiit not found",
+  //   });
+  // }
 
   const followersObj = foundSubgr.followers.filter(
     (item) => item.blocked === false
@@ -157,6 +173,7 @@ const verifyModerator = async (username, subgr) => {
 
 /// @DELETE /gr/delete/:subgr
 /// Delete a subgreddiit
+/// Only for moderator
 const deleteSubgreddiit = async (req, res) => {
   if (process.env.MODE === "dev") {
     console.log("Delete subgreddiit");
@@ -414,6 +431,7 @@ const addJoinRequest = async (req, res) => {
 
 /// @GET /gr/leave/:subgr
 /// Leave a subgreddiit
+// Only for not moderator
 const leaveSubgreddiit = async (req, res) => {
   if (process.env.MODE === "dev") {
     console.log("Leave subgreddiit");
