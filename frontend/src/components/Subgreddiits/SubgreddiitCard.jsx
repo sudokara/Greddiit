@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { BsArrowRight, BsCardText, BsTrash } from "react-icons/bs";
+import { RxEnvelopeOpen } from "react-icons/rx";
 import { ImExit } from "react-icons/im";
 import { FiUsers } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
@@ -23,14 +24,14 @@ const SubgreddiitCard = ({
 }) => {
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState(
-    jwt_decode(localStorage.getItem("greddiit-access-token")).username
-  );
+  const username = jwt_decode(
+    localStorage.getItem("greddiit-access-token")
+  ).username;
 
   const queryClient = useQueryClient();
 
   const handleSubDelete = (subgr) => {
-    setActionLoading(true);
+    // setActionLoading(true);
     axiosPrivate
       .delete(`/api/gr/delete/${subgr}`)
       .then((response) => console.log(response))
@@ -51,7 +52,7 @@ const SubgreddiitCard = ({
   });
 
   const handleSubLeave = (subgr) => {
-    setActionLoading(true);
+    // setActionLoading(true);
     axiosPrivate
       .get(`/api/gr/leave/${subgr}`)
       .then((response) => console.log(response))
@@ -61,13 +62,31 @@ const SubgreddiitCard = ({
   const leaveSubMutation = useMutation({
     mutationFn: (subgr) => {
       handleSubLeave(subgr);
-      setActionLoading(false);
+      // setActionLoading(false);
     },
     onSuccess: () => {
       setTimeout(() => {
         queryClient.invalidateQueries(["mysubs", username]);
         queryClient.invalidateQueries(["allsubs", username]);
       }, 1000);
+    },
+  });
+
+  const handleAddJoinReq = (subgr) => {
+    // setActionLoading(true);
+    axiosPrivate
+      .post(`/api/gr/jreq/${subgr}`)
+      .then((response) => console.log(response))
+      .catch((err) => {
+        console.log(err);
+        window.alert(err.response.data.message);
+      });
+  };
+
+  const joinReqMutation = useMutation({
+    mutationFn: (subgr) => {
+      handleAddJoinReq(subgr);
+      // setActionLoading(false);
     },
   });
 
@@ -78,7 +97,7 @@ const SubgreddiitCard = ({
           className="hover:cursor-pointer"
           onClick={() => navigate("/r/" + name)}
         >
-          <img src="https://source.unsplash.com/random" alt="Shoes" />
+          <img src="https://source.unsplash.com/random" width="384px" alt="Shoes" />
         </figure>
         <div className="card-body">
           <h2 className="text-center font-bold text-3xl text-primary">
@@ -123,6 +142,7 @@ const SubgreddiitCard = ({
 
           <div className="flex flex-row justify-around">
             {showLeave ? (
+              // leave sub button
               <div>
                 <button
                   disabled={showDisabledLeave}
@@ -138,6 +158,7 @@ const SubgreddiitCard = ({
                 </button>
               </div>
             ) : showDelete ? (
+              // delete button
               <div>
                 <button
                   className={`btn btn-square btn-outline mt-3 ${
@@ -153,12 +174,27 @@ const SubgreddiitCard = ({
                 </button>
               </div>
             ) : (
-              ""
+              // join request button
+              <div>
+                <button
+                  className={`btn btn-square btn-outline mt-3 ${
+                    actionLoading ? "loading" : ""
+                  }`}
+                  onClick={(e) => {
+                    // setActionLoading(true);
+                    joinReqMutation.mutate(name);
+                  }}
+                >
+                  <RxEnvelopeOpen />
+                </button>
+              </div>
             )}
 
             <div>
               <button
-                className="btn btn-square btn-outline mt-3"
+                className={`btn btn-square btn-outline mt-3 ${
+                  actionLoading ? "loading" : ""
+                }`}
                 onClick={() => navigate("/r/" + name)}
               >
                 <BsArrowRight />
