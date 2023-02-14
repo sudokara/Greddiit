@@ -21,7 +21,9 @@ router.route("/ismod/:subgr").get(SubGreddiitController.isSubMod);
 
 router.route("/mysubs").get(SubGreddiitController.mySubgreddiits);
 
-router.route("/leave/:subgr").post(SubGreddiitController.leaveSubgreddiit);
+router.route("/all").get(SubGreddiitController.getAllSubs);
+
+router.route("/leave/:subgr").get(SubGreddiitController.leaveSubgreddiit);
 
 router.route("/delete/:subgr").delete(SubGreddiitController.deleteSubgreddiit);
 

@@ -80,6 +80,7 @@ const getSubInfo = async (req, res) => {
       banned_keywords: 1,
       num_posts: 1,
       num_people: 1,
+      creator: 1,
     }
   );
 
@@ -398,6 +399,9 @@ const addJoinRequest = async (req, res) => {
     .send({ message: "Joining request made" });
 };
 
+
+/// @GET /gr/leave/:subgr
+/// Leave a subgreddiit
 const leaveSubgreddiit = async (req, res) => {
   if (process.env.MODE === "dev") {
     console.log("Leave subgreddiit");
@@ -489,7 +493,8 @@ const isSubMod = async (req, res) => {
     .send({ message: "You are the moderator of this subgreddiit" });
 };
 
-///
+/// @GET /gr/mysubs
+/// List of all subgreddiits created by requesting user
 const mySubgreddiits = async (req, res) => {
   const username = req.user;
 
@@ -503,6 +508,43 @@ const mySubgreddiits = async (req, res) => {
   return res.status(StatusCodes.OK).send(foundSubs);
 };
 
+/// @GET /gr/all
+/// List of all subgreddiits
+/// Separated into joined and not joined
+const getAllSubs = async (req, res) => {
+  const username = req.user;
+
+  const allSubs = await SubGreddiit.find(
+    {},
+    { _id: 0, __v: 0, createdAt: 0, updatedAt: 0 }
+  )
+    .lean()
+    .exec();
+
+  const checkFollower = (followers) => {
+    if (
+      followers.find(
+        (follower) =>
+          follower.username === username && follower.blocked === false
+      )
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const joinedSubs = allSubs.filter((item) => checkFollower(item.followers));
+
+  const notJoinedSubs = allSubs.filter(
+    (item) => !checkFollower(item.followers)
+  );
+
+  return res
+    .status(StatusCodes.OK)
+    .send({ joined_subs: joinedSubs, not_joined_subs: notJoinedSubs });
+};
+
 module.exports = {
   createSubgreddiit,
   getSubInfo,
@@ -514,4 +556,5 @@ module.exports = {
   leaveSubgreddiit,
   isSubMod,
   mySubgreddiits,
+  getAllSubs,
 };
