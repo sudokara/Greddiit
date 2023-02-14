@@ -31,22 +31,23 @@ const Login = ({ isLoading, setIsLoading }) => {
     <>
       <div className="card flex-shrink-0 w-full max-w-md shadow-2xl bg-base-100">
         <div className="card-body">
-          <div className="form-control">
-            <label className="label">
-              {/* <span className="label-text">Email</span> */}
-              <span className="label-text">Username</span>
-            </label>
-            <input
-              type="text"
-              placeholder="admin"
-              className="input input-bordered active:border-indigo-500/100 hover:border-indigo-500/100 focus:border-indigo-500/100"
-              value={username}
-              disabled={isLoading}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          </div>
           <form onSubmit={(e) => e.preventDefault()}>
+            <div className="form-control">
+              <label className="label">
+                {/* <span className="label-text">Email</span> */}
+                <span className="label-text">Username</span>
+              </label>
+              <input
+                type="text"
+                placeholder="admin"
+                className="input input-bordered active:border-indigo-500/100 hover:border-indigo-500/100 focus:border-indigo-500/100"
+                value={username}
+                disabled={isLoading}
+                onChange={(e) => setUsername(e.target.value)}
+                autoFocus
+                required
+              />
+            </div>
             <div className="form-control">
               <label className="label">
                 <span className="label-text">Password</span>
