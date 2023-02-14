@@ -1,12 +1,23 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { VscSignOut } from "react-icons/vsc";
 import { BsPerson, BsBookmarks, BsBinoculars } from "react-icons/bs";
-import { FiAnchor } from "react-icons/fi";
+import { FiAnchor, FiUsers } from "react-icons/fi";
+import { GoReport } from "react-icons/go";
 import { useNavigate, NavLink, useLocation } from "react-router-dom";
+import jwt_decode from "jwt-decode";
+import { axiosPrivate } from "../api/axios";
+import { AiOutlineUsergroupAdd } from "react-icons/ai";
+import { ImStatsDots } from "react-icons/im";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const username = jwt_decode(
+    localStorage.getItem("greddiit-access-token")
+  ).username;
+
+  const [isSubMod, setIsSubMod] = useState(false);
 
   const pageTitles = {
     "/me": "My Profile",
@@ -15,43 +26,55 @@ const Navbar = () => {
     "/r": "Subgreddiits",
   };
 
+  // noqa: no-useless-escape col 33
+  // eslint-disable-next-line
   const subNameRegex = /\/r\/([^\/]+)/; // get everything between /r and the next /
   let currentPage = pageTitles[location.pathname] || "";
   const subName = subNameRegex.exec(location.pathname) || "";
+  // let isSubMod = false;
   if (subName) {
     currentPage = subName[0].slice(1).replace("%20", " ");
+    axiosPrivate
+      .get(`/api/gr/ismod/${currentPage.slice(2)}`)
+      .then((response) => {
+        setIsSubMod(true);
+        console.log(response);
+      })
+      .catch((err) => {
+        setIsSubMod(false);
+      })
+      .then(console.log(isSubMod));
+
+    // console.log(currentPage.slice(2));
   }
 
-  // console.log(
-  //   subNameRegex.exec(location.pathname)
-  //     ? subNameRegex.exec(location.pathname)[1]
-  //     : ""
-  // );
-
-  const handleKeyPress = useCallback((event) => {
-    if (
-      event.target.nodeName !== "INPUT" &&
-      event.target.nodeName !== "TEXTAREA"
-    ) {
-      // console.log(`Key pressed: ${event.key}`);
-      switch (event.key) {
-        case "p":
-          navigate("/me");
-          break;
-        case "s":
-          navigate("/saved");
-          break;
-        case "m":
-          navigate("/myr");
-          break;
-        case "a":
-          navigate("/r");
-          break;
-        default:
-          break;
+  const handleKeyPress = useCallback(
+    (event) => {
+      if (
+        event.target.nodeName !== "INPUT" &&
+        event.target.nodeName !== "TEXTAREA"
+      ) {
+        // console.log(`Key pressed: ${event.key}`);
+        switch (event.key) {
+          case "p":
+            navigate("/me");
+            break;
+          case "s":
+            navigate("/saved");
+            break;
+          case "m":
+            navigate("/myr");
+            break;
+          case "a":
+            navigate("/r");
+            break;
+          default:
+            break;
+        }
       }
-    }
-  }, [navigate]);
+    },
+    [navigate]
+  );
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyPress);
@@ -91,6 +114,56 @@ const Navbar = () => {
             <li>
                 <a>Item 2</a>
             </li> */}
+
+            {isSubMod ? (
+              <div className="bg-accent rounded-lg flex flex-row flex-wrap">
+                <li className="mx-1.5">
+                  <NavLink
+                    to={`${location.pathname}/users`}
+                    className={({ isActive }) =>
+                      isActive ? "bg-primary" : "hover:bg-secondary"
+                    }
+                  >
+                    <FiUsers />
+                  </NavLink>
+                </li>
+
+                <li className="mx-1.5">
+                  <NavLink
+                    to={`${location.pathname}/jreqs`}
+                    className={({ isActive }) =>
+                      isActive ? "bg-primary" : "hover:bg-secondary"
+                    }
+                  >
+                    <AiOutlineUsergroupAdd />
+                  </NavLink>
+                </li>
+
+                <li className="mx-1.5">
+                  <NavLink
+                    to={`${location.pathname}/stats`}
+                    className={({ isActive }) =>
+                      isActive ? "bg-primary" : "hover:bg-secondary"
+                    }
+                  >
+                    <ImStatsDots />
+                  </NavLink>
+                </li>
+
+                <li className="mx-1.5">
+                  <NavLink
+                    to={`${location.pathname}/reports`}
+                    className={({ isActive }) =>
+                      isActive ? "bg-primary" : "hover:bg-secondary"
+                    }
+                  >
+                    <GoReport />
+                  </NavLink>
+                </li>
+              </div>
+            ) : (
+              ""
+            )}
 
             <li className="mx-1.5">
               <NavLink
