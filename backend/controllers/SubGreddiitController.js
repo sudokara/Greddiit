@@ -4,6 +4,9 @@ const User = require("../models/UserModel");
 const StatusCodes = require("http-status-codes").StatusCodes;
 const ReasonPhrases = require("http-status-codes").ReasonPhrases;
 
+
+/// @POST /gr/create
+/// Create a subgreddiit
 const createSubgreddiit = async (req, res) => {
   if (process.env.MODE === "dev") {
     console.log("Create subgreddiit");
@@ -63,6 +66,8 @@ const createSubgreddiit = async (req, res) => {
     .send({ message: "Subgreddiit created" });
 };
 
+/// @GET /gr/info/:subgr
+/// get information about the subgr
 const getSubInfo = async (req, res) => {
   if (process.env.MODE === "dev") {
     console.log("Get Subgreddiit info");
@@ -75,12 +80,14 @@ const getSubInfo = async (req, res) => {
     { name: subgr },
     {
       _id: 0,
+      __v: 0,
       name: 1,
       description: 1,
       banned_keywords: 1,
       num_posts: 1,
       num_people: 1,
       creator: 1,
+      createdAt: 1,
     }
   );
 
@@ -94,6 +101,8 @@ const getSubInfo = async (req, res) => {
   return res.status(200).send(foundSubgr);
 };
 
+/// @GET /gr/users/:subgr
+/// Get the users of subgr
 const getSubUsers = async (req, res) => {
   if (process.env.MODE === "dev") {
     console.log(getSubUsers);
@@ -146,6 +155,7 @@ const verifyModerator = async (username, subgr) => {
   }
 };
 
+/// @DELETE /gr/delete/:subgr
 /// Delete a subgreddiit
 const deleteSubgreddiit = async (req, res) => {
   if (process.env.MODE === "dev") {
@@ -329,6 +339,9 @@ const patchJoinRequests = async (req, res) => {
   return res.status(StatusCodes.OK).send("Modified joining status");
 };
 
+/// @POST gr/jreq/:subgr
+/// Send a join request from current user
+/// to the moderator of the subgr
 const addJoinRequest = async (req, res) => {
   // find subgreddiit and check if it exists
   const subgr = req.params.subgr;
@@ -398,7 +411,6 @@ const addJoinRequest = async (req, res) => {
     .status(StatusCodes.CREATED)
     .send({ message: "Joining request made" });
 };
-
 
 /// @GET /gr/leave/:subgr
 /// Leave a subgreddiit
@@ -470,6 +482,9 @@ const leaveSubgreddiit = async (req, res) => {
   return res.status(StatusCodes.OK).send({ message: "Left subgreddiit" });
 };
 
+/// @GET /gr/ismod/:subgr
+/// Check if requesting user is moderator of subgr
+/// OK if mod, FORBIDDEN if not
 const isSubMod = async (req, res) => {
   const subgr = req.params.subgr;
   const modStatus = await verifyModerator(req.user, subgr);
@@ -514,10 +529,7 @@ const mySubgreddiits = async (req, res) => {
 const getAllSubs = async (req, res) => {
   const username = req.user;
 
-  const allSubs = await SubGreddiit.find(
-    {},
-    { _id: 0, __v: 0, createdAt: 0, updatedAt: 0 }
-  )
+  const allSubs = await SubGreddiit.find({}, { _id: 0, __v: 0, createdAt: 0 })
     .lean()
     .exec();
 
