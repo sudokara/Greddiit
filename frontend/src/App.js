@@ -8,6 +8,7 @@ import MySubgreddiits from "./components/Subgreddiits/MySubgreddiits/MySubgreddi
 import SavedPosts from "./components/SavedPosts/SavedPosts";
 import AllSubgreddiits from "./components/Subgreddiits/AllSubgreddiits/AllSubgreddiits";
 import Subgreddiit from "./components/Subgreddiits/Subgreddiit/Subgreddiit";
+import ModActions from "./components/Subgreddiits/Subgreddiit/ModActions";
 
 function App() {
   return (
@@ -49,6 +50,38 @@ function App() {
         element={
           <RequireAuth redirectTo="/auth">
             <AllSubgreddiits />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/r/:name/users"
+        element={
+          <RequireAuth redirectTo="/auth">
+            <ModActions mode="users" />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/r/:name/jreqs"
+        element={
+          <RequireAuth redirectTo="/auth">
+            <ModActions mode="jreqs" />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/r/:name/stats"
+        element={
+          <RequireAuth redirectTo="/auth">
+            <ModActions mode="stats" />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/r/:name/reports"
+        element={
+          <RequireAuth redirectTo="/auth">
+            <ModActions mode="reports" />
           </RequireAuth>
         }
       />

@@ -1,10 +1,10 @@
 import React, { useEffect, useCallback, useState } from "react";
-import { VscSignOut } from "react-icons/vsc";
+import { VscSignOut, VscHome } from "react-icons/vsc";
 import { BsPerson, BsBookmarks, BsBinoculars } from "react-icons/bs";
 import { FiAnchor, FiUsers } from "react-icons/fi";
 import { GoReport } from "react-icons/go";
 import { useNavigate, NavLink, useLocation } from "react-router-dom";
-import jwt_decode from "jwt-decode";
+// import jwt_decode from "jwt-decode";
 import { axiosPrivate } from "../api/axios";
 import { AiOutlineUsergroupAdd } from "react-icons/ai";
 import { ImStatsDots } from "react-icons/im";
@@ -13,9 +13,9 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const username = jwt_decode(
-    localStorage.getItem("greddiit-access-token")
-  ).username;
+  // const username = jwt_decode(
+  //   localStorage.getItem("greddiit-access-token")
+  // ).username;
 
   const [isSubMod, setIsSubMod] = useState(false);
 
@@ -38,14 +38,12 @@ const Navbar = () => {
       .get(`/api/gr/ismod/${currentPage.slice(2)}`)
       .then((response) => {
         setIsSubMod(true);
-        console.log(response);
+        // console.log(response);
       })
       .catch((err) => {
         setIsSubMod(false);
-      })
-      .then(console.log(isSubMod));
-
-    // console.log(currentPage.slice(2));
+      });
+    // .then(console.log(isSubMod));
   }
 
   const handleKeyPress = useCallback(
@@ -68,12 +66,37 @@ const Navbar = () => {
           case "a":
             navigate("/r");
             break;
+          case "h":
+            if (isSubMod) {
+              navigate(`/${currentPage}`);
+            }
+            break;
+          case "u":
+            if (isSubMod) {
+              navigate(`/${currentPage}/users`);
+            }
+            break;
+          case "j":
+            if (isSubMod) {
+              navigate(`/${currentPage}/jreqs`);
+            }
+            break;
+          case "t":
+            if (isSubMod) {
+              navigate(`/${currentPage}/stats`);
+            }
+            break;
+          case "o":
+            if (isSubMod) {
+              navigate(`/${currentPage}/reports`);
+            }
+            break;
           default:
             break;
         }
       }
     },
-    [navigate]
+    [navigate, isSubMod, currentPage]
   );
 
   useEffect(() => {
@@ -119,45 +142,67 @@ const Navbar = () => {
               <div className="bg-accent rounded-lg flex flex-row flex-wrap">
                 <li className="mx-1.5">
                   <NavLink
-                    to={`${location.pathname}/users`}
+                    to={`/${currentPage}`}
                     className={({ isActive }) =>
                       isActive ? "bg-primary" : "hover:bg-secondary"
                     }
                   >
-                    <FiUsers />
+                    {/* {console.log(location.pathname)} */}
+                    <div className="tooltip" data-tip="Sub Home">
+                      <VscHome />
+                    </div>
                   </NavLink>
                 </li>
 
                 <li className="mx-1.5">
                   <NavLink
-                    to={`${location.pathname}/jreqs`}
+                    to={`/${currentPage}/users`}
                     className={({ isActive }) =>
                       isActive ? "bg-primary" : "hover:bg-secondary"
                     }
                   >
-                    <AiOutlineUsergroupAdd />
+                    <div className="tooltip" data-tip="Sub Users">
+                      <FiUsers />
+                    </div>
                   </NavLink>
                 </li>
 
                 <li className="mx-1.5">
                   <NavLink
-                    to={`${location.pathname}/stats`}
+                    to={`/${currentPage}/jreqs`}
                     className={({ isActive }) =>
                       isActive ? "bg-primary" : "hover:bg-secondary"
                     }
                   >
-                    <ImStatsDots />
+                    <div className="tooltip" data-tip="Join Requests">
+                      <AiOutlineUsergroupAdd />
+                    </div>
                   </NavLink>
                 </li>
 
                 <li className="mx-1.5">
                   <NavLink
-                    to={`${location.pathname}/reports`}
+                    to={`/${currentPage}/stats`}
                     className={({ isActive }) =>
                       isActive ? "bg-primary" : "hover:bg-secondary"
                     }
                   >
-                    <GoReport />
+                    <div className="tooltip" data-tip="Sub Stats">
+                      <ImStatsDots />
+                    </div>
+                  </NavLink>
+                </li>
+
+                <li className="mx-1.5">
+                  <NavLink
+                    to={`/${currentPage}/reports`}
+                    className={({ isActive }) =>
+                      isActive ? "bg-primary" : "hover:bg-secondary"
+                    }
+                  >
+                    <div className="tooltip" data-tip="Sub Reports">
+                      <GoReport />
+                    </div>
                   </NavLink>
                 </li>
               </div>
@@ -172,7 +217,9 @@ const Navbar = () => {
                   isActive ? "bg-primary" : "hover:bg-secondary"
                 }
               >
-                <BsBinoculars />
+                <div className="tooltip" data-tip="All Subgreddiits">
+                  <BsBinoculars />
+                </div>
               </NavLink>
             </li>
 
@@ -183,7 +230,9 @@ const Navbar = () => {
                   isActive ? "bg-primary" : "hover:bg-secondary"
                 }
               >
-                <FiAnchor />
+                <div className="tooltip" data-tip="My subgreddiits">
+                  <FiAnchor />
+                </div>
               </NavLink>
             </li>
 
@@ -194,7 +243,9 @@ const Navbar = () => {
                   isActive ? "bg-primary" : "hover:bg-secondary"
                 }
               >
-                <BsBookmarks />
+                <div className="tooltip" data-tip="Saved Posts">
+                  <BsBookmarks />
+                </div>
               </NavLink>
             </li>
 
@@ -205,7 +256,9 @@ const Navbar = () => {
                   isActive ? "bg-primary" : "hover:bg-secondary"
                 }
               >
-                <BsPerson />
+                <div className="tooltip" data-tip="My Profile">
+                  <BsPerson />
+                </div>
               </NavLink>
             </li>
 
@@ -217,7 +270,9 @@ const Navbar = () => {
                   isActive ? "bg-primary" : "hover:bg-secondary"
                 }
               >
-                <VscSignOut />
+                <div className="tooltip" data-tip="Logout">
+                  <VscSignOut />
+                </div>
               </NavLink>
             </li>
           </ul>
