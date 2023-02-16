@@ -26,7 +26,7 @@ const UserData = () => {
     queryFn: getUserData,
   });
 
-  if (usersQuery.isLoading || !usersQuery.data) {
+  if (usersQuery.isLoading || !usersQuery?.data) {
     return <Loading />;
   }
 
