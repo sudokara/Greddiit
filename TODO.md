@@ -1,11 +1,12 @@
 Misc
 
-- [ ] Do i need to change the route for unsave to only use postid?
 - [x] change to single access token
 - [ ] Dont allow spaces and special characters in sub title and username?
-- [ ] fix typerror cant convert undefined to 
+- [ ] fix typerror cant convert undefined to
 - [ ] input validation with regex on frontend and backend
-- [ ] restrict users, join reqs, stats, reports to mod
+- [x] fix buttons for users, join reqs, stats and reports
+- [ ] fix home button staying active when seeing mod pages
+- [ ] shift to [responsive card](rsbvbzryjrtovrqqfy@tcwlm.com)
 
 # Backend
 
@@ -25,6 +26,7 @@ Misc
 - [x] check unique username and email
 - [x] check if user exists when verifying jwt
 - [x] and not when creating
+- [ ] restrict [x]users, [x]join reqs, stats, reports to mod
 - [ ] censor when returning post
 
 - [ ] reports
@@ -40,6 +42,7 @@ Misc
 # Frontend
 
 ## Profile Page
+
 - [x] Login
 - [x] register
 - [x] Disable editing username in frontend
@@ -52,44 +55,41 @@ Misc
 - [x] Search
 - [ ] filter
 - [ ] sort
-add buttons:
-    - [x] delete subgreddiit: BsTrash
-    - [x] go to subgreddiit: BsArrowUpRightSquare
-    - [x]  create subgreddiit: CgFolderAdd
-    - [x]  search: BiSearch
-    - [x]  Subgreddit card: https://daisyui.com/components/card/#card-with-image-overlay
-    - [x]  Limit description to first 30 characters
+      add buttons: - [x] delete subgreddiit: BsTrash - [x] go to subgreddiit: BsArrowUpRightSquare - [x] create subgreddiit: CgFolderAdd - [x] search: BiSearch - [x] Subgreddit card: https://daisyui.com/components/card/#card-with-image-overlay - [x] Limit description to first 30 characters
 
-    - [x] why doesnt modal stay open after creating
-    - [ ] loading for delete 
-    - [x] create subg
+      - [x] why doesnt modal stay open after creating
+      - [ ] loading for delete
+      - [x] create subg
 
 Random photo : https://source.unsplash.com/random
 
 ## All Subgreddiits:
+
 - [ ] make proper dialog box for join request not sent
 - [ ] why isnt loading for join req/ leave working
-- [ ] if join req gets rejected?? or error because left??
 
 tags:
+
 ```html
 <div className="badge badge-accent badge-outline">accent</div>
 ```
 
 ## Subgreddiit page navbar:
+
 - [x] Users: FiUsers
 - [x] Join Requests: AiOutlineUsergroupAdd
 - [x] Stats: ImStatsDots
 - [x] Reports: GoReport
 
-
 ## Subgreddit page:
+
 BiUpvote
 BiDownvote
 
 - [ ] Public profile
 
 # Bonus
+
 ## Chat:
 
 ```
@@ -103,9 +103,11 @@ BiDownvote
 ```
 
 ## Keyboard shortcuts:
+
 react-keyboard-event-handler
 
 ## Regex
+
 Tags: lower case, single word, comma separated, no spaces, letters and numbers only
 
 ```js

@@ -35,13 +35,14 @@ const SubgreddiitCard = ({
     axiosPrivate
       .delete(`/api/gr/delete/${subgr}`)
       .then((response) => console.log(response))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error(err))
+      .then(setActionLoading(false));
   };
 
   const deleteSubMutation = useMutation({
     mutationFn: (subgr) => {
       handleSubDelete(subgr);
-      setActionLoading(false);
+      // setActionLoading(false);
     },
     onSuccess: () => {
       setTimeout(() => {
@@ -56,7 +57,8 @@ const SubgreddiitCard = ({
     axiosPrivate
       .get(`/api/gr/leave/${subgr}`)
       .then((response) => console.log(response))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error(err))
+      .then(setActionLoading(false));
   };
 
   const leaveSubMutation = useMutation({
@@ -97,7 +99,11 @@ const SubgreddiitCard = ({
           className="hover:cursor-pointer"
           onClick={() => navigate("/r/" + name)}
         >
-          <img src="https://source.unsplash.com/random" width="384px" alt="Shoes" />
+          <img
+            src="https://source.unsplash.com/random"
+            width="384px"
+            alt="Shoes"
+          />
         </figure>
         <div className="card-body">
           <h2 className="text-center font-bold text-3xl text-primary">
