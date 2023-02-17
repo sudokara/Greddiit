@@ -52,6 +52,10 @@ const subgreddiitSchema = new Schema(
         },
       ],
     },
+    image: {
+      type: String,
+      required: false,
+    },
   },
   { timestamps: true }
 );

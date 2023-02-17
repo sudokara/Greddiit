@@ -16,12 +16,15 @@ const CreateSubgreddiit = ({ setShowModal }) => {
   const [isValid, setIsValid] = useState(false);
   const [isLoading, setisLoading] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState("");
-  const [username, setUsername] = useState(
-    jwt_decode(localStorage.getItem("greddiit-access-token")).username
-  );
+  const [image, setImage] = useState("");
+  const username = jwt_decode(
+    localStorage.getItem("greddiit-access-token")
+  ).username;
 
   const tagPattern = /^$|^[a-z0-9]+(,[a-z0-9]+)*$/;
   const bannedPattern = /^$|^[a-zA-Z0-9]+(,[a-zA-Z0-9]+)*$/;
+
+  const maxImageSizeMb = 1;
 
   const handleCheckValid = () => {
     setIsValid(
@@ -30,6 +33,33 @@ const CreateSubgreddiit = ({ setShowModal }) => {
         tagPattern.test(tagsRef.current.value) &&
         bannedPattern.test(bannedRef.current.value)
     );
+  };
+
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = () => {
+        resolve(fileReader.result);
+      };
+      fileReader.onerror = (err) => {
+        reject(err);
+      };
+    });
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    const fileMb = file.size / 1024 ** 2;
+
+    if (fileMb > maxImageSizeMb) {
+      alert("The image you uploaded is too big.");
+      setIsValid(false);
+    } else {
+      const base64 = await convertToBase64(file);
+      setImage(base64);
+      handleCheckValid();
+    }
   };
 
   const handleCreateSubgreddiit = () => {
@@ -42,6 +72,7 @@ const CreateSubgreddiit = ({ setShowModal }) => {
           description: descRef.current.value,
           tags: tagsRef.current.value.split(","),
           banned_keywords: bannedRef.current.value.split(","),
+          image: image
         })
         .then((response) => {
           console.log(response);
@@ -153,6 +184,20 @@ const CreateSubgreddiit = ({ setShowModal }) => {
                   onChange={handleCheckValid}
                 />
               </label>
+            </div>
+
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">
+                  Sub image(max size {maxImageSizeMb}mb)
+                </span>
+              </label>
+              <input
+                type="file"
+                className="w-full mb-4 file-input file-input-bordered"
+                accept="image/*"
+                onChange={(e) => handleFileChange(e)}
+              />
             </div>
 
             <div className="form-control">

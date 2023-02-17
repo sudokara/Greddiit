@@ -128,6 +128,7 @@ const AllSubgreddiits = () => {
                     ? sub?.banned_keywords
                     : []
                 }
+                image={sub?.image}
                 showLeave={true}
                 showDisabledLeave={sub?.creator === username}
                 showDelete={false}
@@ -163,6 +164,7 @@ const AllSubgreddiits = () => {
                     ? sub?.banned_keywords
                     : []
                 }
+                image={sub?.image}
                 showLeave={false}
                 showDelete={false}
               />

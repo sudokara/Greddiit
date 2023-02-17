@@ -49,6 +49,7 @@ const createSubgreddiit = async (req, res) => {
         blocked: false,
       },
     ],
+    image: req.body.image || "",
   });
 
   newSg.save((err, doc) => {
@@ -87,6 +88,7 @@ const getSubInfo = async (req, res) => {
       num_people: 1,
       creator: 1,
       createdAt: 1,
+      image: 1
     }
   );
 

@@ -21,6 +21,7 @@ const SubgreddiitCard = ({
   showLeave,
   showDelete,
   showDisabledLeave,
+  image
 }) => {
   const navigate = useNavigate();
 
@@ -100,9 +101,11 @@ const SubgreddiitCard = ({
           onClick={() => navigate("/r/" + name)}
         >
           <img
-            src="https://source.unsplash.com/random"
-            width="384px"
-            alt="Shoes"
+            // src="https://source.unsplash.com/random"
+            src={image || "https://source.unsplash.com/random"}
+            width={384}
+            style={{maxHeight: "384px"}}
+            alt={`${name}`}
           />
         </figure>
         <div className="card-body">

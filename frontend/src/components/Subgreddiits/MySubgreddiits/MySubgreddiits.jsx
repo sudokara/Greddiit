@@ -125,6 +125,7 @@ const MySubgreddiits = () => {
                     ? sub?.banned_keywords
                     : []
                 }
+                image={sub?.image}
                 actionLoading={deleteLoading}
                 setActionLoading={setDeleteLoading}
                 showLeave={false}
