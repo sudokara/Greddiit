@@ -1,8 +1,15 @@
+Now:
+- [x] Modify sub schema to include image
+- [x] store image in db
+- [x] Send image to backend
+- [x] Display image in sub card, else show random
+
 Misc
 
 - [x] change to single access token
 - [ ] Dont allow spaces and special characters in sub title and username?
 - [ ] fix typerror cant convert undefined to
+- [ ] standardise image height
 - [ ] input validation with regex on frontend and backend
 - [x] fix buttons for users, join reqs, stats and reports
 - [ ] fix home button staying active when seeing mod pages
@@ -102,9 +109,6 @@ BiDownvote
     Meteor: This is a full-stack JavaScript platform for building real-time web applications, including chat functionality. It provides a simple API for real-time communication and makes it easy to integrate with React.
 ```
 
-## Keyboard shortcuts:
-
-react-keyboard-event-handler
 
 ## Regex
 

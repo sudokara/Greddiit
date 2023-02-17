@@ -17,6 +17,7 @@ const CreateSubgreddiit = ({ setShowModal }) => {
   const [isLoading, setisLoading] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState("");
   const [image, setImage] = useState("");
+  const [fileSizeExceeded, setFileSizeExceeded] = useState(false);
   const username = jwt_decode(
     localStorage.getItem("greddiit-access-token")
   ).username;
@@ -31,7 +32,8 @@ const CreateSubgreddiit = ({ setShowModal }) => {
       nameRef.current.value &&
         descRef.current.value &&
         tagPattern.test(tagsRef.current.value) &&
-        bannedPattern.test(bannedRef.current.value)
+        bannedPattern.test(bannedRef.current.value) &&
+        !fileSizeExceeded
     );
   };
 
@@ -54,9 +56,11 @@ const CreateSubgreddiit = ({ setShowModal }) => {
 
     if (fileMb > maxImageSizeMb) {
       alert("The image you uploaded is too big.");
+      setFileSizeExceeded(true);
       setIsValid(false);
     } else {
       const base64 = await convertToBase64(file);
+      setFileSizeExceeded(false);
       setImage(base64);
       handleCheckValid();
     }
@@ -72,7 +76,7 @@ const CreateSubgreddiit = ({ setShowModal }) => {
           description: descRef.current.value,
           tags: tagsRef.current.value.split(","),
           banned_keywords: bannedRef.current.value.split(","),
-          image: image
+          image: image,
         })
         .then((response) => {
           console.log(response);
