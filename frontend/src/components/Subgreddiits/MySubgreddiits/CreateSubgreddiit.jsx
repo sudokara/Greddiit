@@ -92,6 +92,7 @@ const CreateSubgreddiit = ({ setShowModal }) => {
         .then(() => setisLoading(false));
     } else {
       setSubmitSuccess("error");
+      setisLoading(false);
     }
   };
 
