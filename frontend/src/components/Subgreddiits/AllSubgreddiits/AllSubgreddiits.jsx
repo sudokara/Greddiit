@@ -19,7 +19,7 @@ const AllSubgreddiits = () => {
   const [leaveLoading, setLeaveLoading] = useState(false);
   const [query, setQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
-  const [selectedSorts, setSelectedSorts] = useState([])
+  const [selectedSorts, setSelectedSorts] = useState([]);
 
   const getAllSubs = async () => {
     try {
@@ -84,6 +84,91 @@ const AllSubgreddiits = () => {
     );
   }
 
+  const sortOptions = [
+    {
+      value: "Name Ascending",
+      label: "Name Ascending",
+    },
+    {
+      value: "Name Descending",
+      label: "Name Descending",
+    },
+    {
+      value: "Followers Descending",
+      label: "Followers Descending",
+    },
+    {
+      value: "Creation Date",
+      label: "Creation Date",
+    },
+  ];
+
+  const selectedSortsValues = selectedSorts.map((item) => item.value);
+  if (
+    selectedSortsValues.includes("Name Ascending") &&
+    selectedSortsValues.includes("Name Descending")
+  ) {
+    setSelectedSorts([]);
+    window.alert(
+      "That sorting criteria makes no sense. Remove one of the Name based sorts."
+    );
+  }
+
+  displayJoined.sort((a, b) => {
+    for (let i = 0; i < selectedSortsValues.length; i++) {
+      const criteria = selectedSortsValues[i];
+      let cmp;
+
+      switch (criteria) {
+        case "Name Ascending":
+          cmp = a.name.localeCompare(b.name);
+          break;
+        case "Name Descending":
+          cmp = b.name.localeCompare(a.name);
+          break;
+        case "Followers Descending":
+          cmp = b.num_people - a.num_people;
+          break;
+        case "Creation Date":
+          cmp = new Date(b.createdAt) - new Date(a.createdAt);
+          break;
+        default:
+          throw new Error("Unexpected sort criteria " + criteria);
+      }
+
+      if (cmp) return cmp;
+    }
+    return 0;
+  });
+
+  displayNotJoined.sort((a, b) => {
+    for (let i = 0; i < selectedSortsValues.length; i++) {
+      const criteria = selectedSortsValues[i];
+      let cmp;
+
+      switch (criteria) {
+        case "Name Ascending":
+          cmp = a.name.localeCompare(b.name);
+          break;
+        case "Name Descending":
+          cmp = b.name.localeCompare(a.name);
+          break;
+        case "Followers Descending":
+          cmp = b.num_people - a.num_people;
+          break;
+        case "Creation Date":
+          cmp = new Date(b.createdAt) - new Date(a.createdAt);
+          break;
+        default:
+          throw new Error("Unexpected sort criteria " + criteria);
+      }
+
+      if (cmp) return cmp;
+    }
+    return 0;
+  });
+  
+
   return (
     <>
       <Navbar />
@@ -133,8 +218,8 @@ const AllSubgreddiits = () => {
             <div className="w-1/2 mt-5 flex justify-center">
               <div className="w-1/2">
                 <TagSelect
-                  handleChange={(selected) => setSelectedTags(selected)}
-                  options={allTagsOptions}
+                  handleChange={(selected) => setSelectedSorts(selected)}
+                  options={sortOptions}
                 />
               </div>
             </div>
