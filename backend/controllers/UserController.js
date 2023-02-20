@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const UserModel = require("../models/UserModel");
+const Post = require("../models/PostModel");
 const httpstatuscodes = require("http-status-codes");
 const bcrypt = require("bcrypt");
 
@@ -362,10 +363,47 @@ const getProfile = async (req, res) => {
   });
 };
 
+/// @GET /user/saved
+/// Get the saved posts for a user
+const getSavedPosts = async (req, res) => {
+  const username = req.user;
+
+  const foundUser = await UserModel.findOne(
+    { username: username },
+    { saved_posts: 1 }
+  )
+    .lean()
+    .exec();
+
+  // console.log(foundUser.saved_posts);
+  const savedPosts = await Post.find({ id: { $in: foundUser.saved_posts } });
+  // console.log(savedPosts);
+
+  return res.status(200).send(savedPosts);
+};
+
+/// @GET /user/following
+/// Get the usernames of the users followed by
+/// the requesting user
+const getFollowing = async (req, res) => {
+  const username = req.user;
+
+  const foundUser = await UserModel.findOne(
+    { username: username },
+    { following: 1 }
+  )
+    .lean()
+    .exec();
+
+  return res.status(httpstatuscodes.StatusCodes.OK).send(foundUser.following);
+};
+
 module.exports = {
   removeFollower,
   addFollowing,
   unFollow,
   editProfile,
   getProfile,
+  getSavedPosts,
+  getFollowing,
 };
