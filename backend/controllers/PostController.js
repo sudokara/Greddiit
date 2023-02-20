@@ -48,6 +48,7 @@ const createPost = async (req, res) => {
   const isCensored = filter.test(postText) || filter.test(postTitle);
 
   // add the post to the subgreddiit
+  // user who makes the post auto upvotes it
   const newPost = new Post({
     title: postTitle,
     text: postText,
@@ -84,16 +85,47 @@ const createPost = async (req, res) => {
     .send({ message: "Post successfully created", isCensored: isCensored });
 };
 
+/// @GET /post/:subgr
+/// Get all the posts in the sub
+/// Censors post texts
 const getPosts = async (req, res) => {
   const subgr = req.params.subgr;
   const username = req.user;
 
-  const foundSubgr = await SubGreddiit.findOne({ name: subgr });
+  const foundSubgr = await SubGreddiit.findOne(
+    { name: subgr },
+    { banned_keywords: 1 }
+  );
+
+  // check if sub exists
   if (!foundSubgr) {
     return res.status(StatusCodes.BAD_REQUEST).send({
       error: ReasonPhrases.BAD_REQUEST,
       message: "Subgreddiit not found",
     });
+  }
+
+  // find the posts
+  const foundPosts = await Post.find({ posted_in: subgr }).lean().exec();
+
+  // censor banned keywords
+  const toCensor = foundSubgr.banned_keywords.length;
+  if (toCensor) {
+    const filter = new RegExp(`${foundSubgr.banned_keywords.join("|")}`, "gi");
+    const censoredPosts = foundPosts.map((item) => ({
+      ...item,
+      title: item.title.replace(filter, "****"),
+      text: item.text.replace(filter, "****"),
+      comments: item.comments.map((comment) => ({
+        ...comment,
+        comment_text: comment.comment_text.replace(filter, "****"),
+      })),
+    }));
+
+    // return results
+    return res.status(StatusCodes.OK).send(censoredPosts);
+  } else {
+    return res.status(StatusCodes.OK).send(foundPosts);
   }
 };
 
@@ -358,6 +390,83 @@ const upvotePost = async (req, res) => {
     .send({ message: "Post upvoted successfully" });
 };
 
+/// @GET /post/unupvote/:subgr/:postId
+/// Remove an upvote if present
+/// Do nothing otherwise
+const removeUpvote = async (req, res) => {
+  const subgr = req.params.subgr;
+  const postId = req.params.id;
+
+  // chek if post exists
+  // check if post has already been upvoted/downvoted
+  const foundPost = await Post.findOne(
+    { id: postId },
+    { upvotes: 1, downvotes: 1, posted_in: 1 }
+  );
+  if (!foundPost) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .send({ error: ReasonPhrases.BAD_REQUEST, message: "Post not found" });
+  }
+  if (foundPost.posted_in !== subgr) {
+    return res.status(StatusCodes.BAD_REQUEST).send({
+      error: ReasonPhrases.BAD_REQUEST,
+      message: "This post is not in this subgreddiit",
+    });
+  }
+
+  // not upvoted this post
+  if (!foundPost.upvotes.includes(req.user)) {
+    return res.status(StatusCodes.FORBIDDEN).send({
+      error: ReasonPhrases.FORBIDDEN,
+      message: "You have not upvoted this post",
+    });
+  }
+
+  // already downvoted this post
+  // do nothing
+  if (foundPost.downvotes.includes(req.user)) {
+    return res
+      .status(StatusCodes.OK)
+      .send({ message: "Post already downvoted" });
+  }
+
+  // check if user part of subgreddiit and is not blocked
+  const foundSubgr = await SubGreddiit.findOne(
+    { name: subgr },
+    { followers: 1 }
+  );
+  if (
+    !foundSubgr.followers.some(
+      (item) => item.username === req.user && item.blocked === false
+    )
+  ) {
+    return res.status(StatusCodes.FORBIDDEN).send({
+      error: ReasonPhrases.FORBIDDEN,
+      message: "You are not part of this subgreddiit or are blocked",
+    });
+  }
+
+  // remove upvote
+  Post.findOneAndUpdate(
+    { id: postId },
+    { $pull: { upvotes: req.user } },
+    (err, raw) => {
+      if (err) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+          error: ReasonPhrases.INTERNAL_SERVER_ERROR,
+          message: "MongoDB update failed",
+        });
+      }
+    }
+  );
+
+  // done
+  return res
+    .status(StatusCodes.CREATED)
+    .send({ message: "Post un-upvoted successfully" });
+};
+
 /// @GET /post/downvote/:subgr/:postId
 /// Downvote a post
 /// Must be logged in, part of subgreddiit
@@ -447,6 +556,81 @@ const downvotePost = async (req, res) => {
     .send({ message: "Post downvoted successfully" });
 };
 
+/// @GET /post/undownvote/:subgr/:postId
+/// Remove a downvote if present
+/// Do nothing otherwise
+const removeDownvote = async (req, res) => {
+  const subgr = req.params.subgr;
+  const postId = req.params.id;
+
+  // chek if post exists
+  // check if post has already been upvoted/downvoted
+  const foundPost = await Post.findOne(
+    { id: postId },
+    { upvotes: 1, downvotes: 1, posted_in: 1 }
+  );
+  if (!foundPost) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .send({ error: ReasonPhrases.BAD_REQUEST, message: "Post not found" });
+  }
+  if (foundPost.posted_in !== subgr) {
+    return res.status(StatusCodes.BAD_REQUEST).send({
+      error: ReasonPhrases.BAD_REQUEST,
+      message: "This post is not in this subgreddiit",
+    });
+  }
+
+  // already downvoted this post
+  if (!foundPost.downvotes.includes(req.user)) {
+    return res.status(StatusCodes.FORBIDDEN).send({
+      error: ReasonPhrases.FORBIDDEN,
+      message: "You have not downvoted this post",
+    });
+  }
+
+  // already upvoted this post
+  // do nothing
+  if (foundPost.upvotes.includes(req.user)) {
+    return res.status(StatusCodes.OK).send({ message: "Post already upvoted" });
+  }
+
+  // check if user part of subgreddiit and is not blocked
+  const foundSubgr = await SubGreddiit.findOne(
+    { name: subgr },
+    { followers: 1 }
+  );
+  if (
+    !foundSubgr.followers.some(
+      (item) => item.username === req.user && item.blocked === false
+    )
+  ) {
+    return res.status(StatusCodes.FORBIDDEN).send({
+      error: ReasonPhrases.FORBIDDEN,
+      message: "You are not part of this subgreddiit or are blocked",
+    });
+  }
+
+  // remove downvote
+  Post.findOneAndUpdate(
+    { id: postId },
+    { $pull: { downvotes: req.user } },
+    (err, raw) => {
+      if (err) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+          error: ReasonPhrases.INTERNAL_SERVER_ERROR,
+          message: "MongoDB update failed",
+        });
+      }
+    }
+  );
+
+  // done
+  return res
+    .status(StatusCodes.CREATED)
+    .send({ message: "Post downvoted successfully" });
+};
+
 module.exports = {
   createPost,
   getPosts,
@@ -454,5 +638,7 @@ module.exports = {
   savePost,
   unsavePost,
   upvotePost,
+  removeUpvote,
   downvotePost,
+  removeDownvote
 };
