@@ -5,6 +5,8 @@ import jwt_decode from "jwt-decode";
 
 import Loading from "../../Loading";
 
+const debug = false;
+
 const CreateSubgreddiit = ({ setShowModal }) => {
   const queryClient = useQueryClient();
 
@@ -74,16 +76,20 @@ const CreateSubgreddiit = ({ setShowModal }) => {
         .post("/api/gr/create", {
           name: nameRef.current.value,
           description: descRef.current.value,
-          tags: tagsRef.current.value.split(","),
-          banned_keywords: bannedRef.current.value.split(","),
+          tags: tagsRef.current.value.length
+            ? tagsRef.current.value.split(",")
+            : [],
+          banned_keywords: bannedRef.current.value.length
+            ? bannedRef.current.value.split(",")
+            : [],
           image: image,
         })
         .then((response) => {
-          console.log(response);
+          if (debug) console.log(response);
           setSubmitSuccess("success");
         })
         .catch((err) => {
-          console.error(err);
+          if (debug) console.error(err);
           setSubmitSuccess("error");
           setTimeout(() => {
             setSubmitSuccess("error");

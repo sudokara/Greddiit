@@ -24,11 +24,18 @@ const CreatePost = ({ setShowModal, subName }) => {
     checkFormValid();
     if (isValid) {
       try {
-        const response = axiosPrivate.post(`/api/post/${subName}`, {
+        const response = await axiosPrivate.post(`/api/post/${subName}`, {
           title: titleRef.current.value,
           text: textRef.current.value,
         });
         if (debug) console.log(response.data);
+
+        if (response.data.isCensored === true) {
+          window.alert(
+            "Your post contains some banned keywords, which have been censored."
+          );
+        }
+
         setSubmitSuccess("success");
       } catch (err) {
         if (debug) console.error(err);

@@ -10,6 +10,7 @@ import Navbar from "../../Navbar";
 import NotFound from "../../NotFound";
 import SubgreddiitCard from "../SubgreddiitCard";
 import CreateSubgreddiit from "./CreateSubgreddiit";
+import TagSelect from "../TagSelect";
 
 const debug = false;
 
@@ -17,6 +18,7 @@ const MySubgreddiits = () => {
   const [showModal, setShowModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [query, setQuery] = useState("");
+  const [selectedTags, setSelectedTags] = useState([]);
   const username = jwt_decode(
     localStorage.getItem("greddiit-access-token")
   ).username;
@@ -51,6 +53,18 @@ const MySubgreddiits = () => {
   const filteredSubs = query
     ? mysubsFuse.search(query).map((entry) => entry.item)
     : mysubsQuery.data;
+
+  const allTags = filteredSubs.map((item) => item.tags).flat();
+  const allTagsOptions = allTags.map((tag) => {
+    return { value: tag, label: tag };
+  });
+
+  let displaySubs = filteredSubs;
+  if (selectedTags.length) {
+    displaySubs = filteredSubs.filter((item) =>
+      selectedTags.some((tagObj) => item.tags.includes(tagObj.value))
+    );
+  }
 
   return (
     <>
@@ -98,8 +112,15 @@ const MySubgreddiits = () => {
             </div>
           </div>
 
-          <div className="flex flex-row justify-around">
-            <div>tags</div>
+          <div className="flex flex-row justify-around w-full">
+            <div className="w-1/2 mt-5">
+              <div className="w-2/3">
+                <TagSelect
+                  handleChange={(selected) => setSelectedTags(selected)}
+                  options={allTagsOptions}
+                />
+              </div>
+            </div>
 
             <div>sort</div>
           </div>
@@ -109,7 +130,7 @@ const MySubgreddiits = () => {
 
         <div className="p-4 flex flex-row flex-wrap w-full justify-around">
           {/* {mysubsQuery.data.map((sub, idx) => ( */}
-          {filteredSubs.map((sub, idx) => (
+          {displaySubs.map((sub, idx) => (
             <div
               key={`${Math.floor(Math.random() * 100)}-sub-${sub?.name}`}
               className="md:w-1/2 lg:w-1/3 xl:w-1/4"

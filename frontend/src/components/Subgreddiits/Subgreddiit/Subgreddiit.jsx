@@ -15,6 +15,7 @@ const debug = false;
 const Subgreddiit = () => {
   const { name } = useParams();
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
   const username = jwt_decode(
     localStorage.getItem("greddiit-access-token")
   ).username;
@@ -35,8 +36,37 @@ const Subgreddiit = () => {
     queryFn: getSubInfo,
   });
 
+  const getPosts = async () => {
+    try {
+      const response = await axiosPrivate.get(`/api/post/${name}`);
+      if (debug) console.log(response.data);
+
+      const followingResponse = await axiosPrivate.get("/api/user/following");
+      if (debug) console.log("following" + followingResponse.data);
+
+      const savedResponse = await axiosPrivate.get("/api/user/saved");
+      if (debug) console.log("saved" + savedResponse.data);
+
+      return {
+        saved: savedResponse.data.map((item) => item.id),
+        following: followingResponse.data,
+        posts: response.data,
+      };
+    } catch (err) {
+      if (debug) console.error(err);
+      return null;
+    }
+  };
+
+  const postsQuery = useQuery({
+    queryKey: ["posts", name],
+    queryFn: getPosts,
+  });
+
   if (subQuery.isLoading || !subQuery.data) return <Loading />;
+  if (postsQuery.isLoading || !postsQuery.data) return <Loading />;
   if (subQuery.isError) return "Error fetching data";
+  if (postsQuery.isError) return "Error fetching data";
 
   const isFollower = subQuery.data.followers.some(
     (item) => item.username === username
@@ -45,52 +75,7 @@ const Subgreddiit = () => {
   return (
     <>
       <Navbar />
-      {/* <div className="flex flex-col flex-wrap justify-center">
-        <div className="flex flex-wrap">
-          <div className="flex w-full justify-center">
-            <img
-              src={
-                subQuery.data?.image ||
-                require("../../../assets/defaultbanner.webp")
-              }
-              height={100}
-              alt={`${name} banner`}
-            />
-          </div>
-        </div>
-        <div className="flex flex-wrap justify-start">
-          <div className="w-1/5">
-            <div className="card card-compact w-full bg-base-100 shadow-xl">
-              <div className="card-body">
-                <h2 className="card-title">Sub Info</h2>
-                <div className="te">
-                  <div>
-                    <FiUsers style={{ display: "inline" }} /> :
-                    {subQuery.data.num_people}
-                  </div>
-                  <div>
-                    <BsCardText style={{ display: "inline" }} /> :{" "}
-                    {subQuery.data.num_posts}
-                  </div>
-                </div>
-                <div className="card-actions justify-center">
-                  <button className="btn btn-primary">Create Post</button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="break-all">
-            {JSON.stringify(subQuery.data)}
-            {JSON.stringify(subQuery.data)}
-            {JSON.stringify(subQuery.data)}
-            {JSON.stringify(subQuery.data)}
-            {JSON.stringify(subQuery.data)}
-            {JSON.stringify(subQuery.data)}
-            {JSON.stringify(subQuery.data)}
-          </div>
-        </div>
-      </div> */}
-      <div className="flex flex-wrap flex-col justify-center">
+      <div className="flex flex-wrap flex-col">
         <div className="flex flex-center">
           <img
             src={
@@ -107,8 +92,7 @@ const Subgreddiit = () => {
         </div>
 
         {/* card and posts  */}
-        <div className="flex flex-col flex-wrap justify-center">
-          {/* card  */}
+        <div className="flex flex-col flex-wrap">
           <div className="flex justify-center">
             <div className="card w-96 bg-base-100 shadow-xl">
               <div className="card-body">
@@ -143,30 +127,42 @@ const Subgreddiit = () => {
 
           <div className="divider"></div>
 
-          <div className="flex justify-around">
-            <div className="w-1/2 mx-5">
-              <PostCard
-                title="Post title"
-                text="Post text blah blah lorem ipsum dolor sit amet"
-                upvoteActive={false}
-                downvoteActive={true}
-                numUpvotes="3.1k"
-                postedBy="somebot"
-                comments={[]}
-              />
-            </div>
-            <div className="w-1/2">
-              <PostCard
-                title="Post title"
-                text="123456789012345678901234567890123456789012345678901234567890"
-                upvoteActive={false}
-                downvoteActive={true}
-                numUpvotes="3.1k"
-                postedBy="someotherbot"
-                postedIn={name}
-                comments={[]}
-              />
-            </div>
+          <div className="flex flex-col w-full justify-around border-2 border-red-500">
+            {postsQuery.data.posts.length
+              ? postsQuery.data.posts.map((item) => (
+                  <div
+                    key={item._id}
+                    className="flex flex-wrap justify-center border-2 border-sky-500"
+                  >
+                    <div className="lg:w-2/3 md:w-full">
+                      <PostCard
+                        id={item.id}
+                        title={item.title}
+                        text={item.text}
+                        numUpvotes={item.upvotes.length - item.downvotes.length}
+                        comments={item.comments}
+                        upvoteActive={item.upvotes.includes(username)}
+                        downvoteActive={item.downvotes.includes(username)}
+                        // ?check if saved
+                        saveActive={postsQuery.data.saved.includes(item.id)}
+                        // !check if user is followed
+                        followActive={
+                          item.posted_by !== username &&
+                          postsQuery.data.following.includes(item.posted_by)
+                        }
+                        followDisable={item.posted_by === username}
+                        //! add report disable condition
+                        reportDisable={item.posted_by === username}
+                        postedBy={item.posted_by}
+                        loading={loading}
+                        postedIn={item.posted_in}
+                        setLoading={setLoading}
+                        allDisable={!isFollower}
+                      />
+                    </div>
+                  </div>
+                ))
+              : "No posts yet"}
           </div>
         </div>
       </div>

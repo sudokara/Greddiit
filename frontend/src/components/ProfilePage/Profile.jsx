@@ -112,7 +112,11 @@ const Profile = () => {
   const unfollowMutation = useMutation({
     mutationFn: (unfollower) => handleUnfollow(unfollower),
     onSuccess: () => {
-      queryClient.invalidateQueries(["profile", username]);
+      setTimeout(() => {
+        queryClient.invalidateQueries(["profile", username]);
+        queryClient.invalidateQueries(["saved", username]);
+        queryClient.removeQueries(["posts"]);
+      }, 1000);
     },
   });
 
@@ -143,7 +147,7 @@ const Profile = () => {
   const editMutation = useMutation({
     mutationFn: handleEdit,
     // onSuccess: () => {
-      // queryClient.invalidateQueries(["profile", username]);
+    // queryClient.invalidateQueries(["profile", username]);
     // },
   });
 
@@ -158,14 +162,6 @@ const Profile = () => {
   return (
     <>
       <Navbar />
-
-      {/* <div className="my-6 flex justify-center">
-        <div className="text-center card w-96 bg-primary text-primary-content">
-          <div className="card-body">
-            <h1 className="text-3xl text-center">My Profile</h1>
-          </div>
-        </div>
-      </div> */}
 
       <div className="flex my-5 flex-column w-full h-full justify-around flex-wrap content-center align-middle ">
         <div className="flex w-full h-full justify-around flex-wrap align-middle mx-3">
@@ -255,7 +251,9 @@ const Profile = () => {
 
             <div className="">
               <button
-                className={`my-6 mx-10 btn w-[44] btn-secondary ${alert === "loading" || editMutation.isLoading ? "loading" : ""} `}
+                className={`my-6 mx-10 btn w-[44] btn-secondary ${
+                  alert === "loading" || editMutation.isLoading ? "loading" : ""
+                } `}
                 onClick={editMutation.mutate}
                 disabled={
                   !password || editMutation.isLoading || alert === "loading"

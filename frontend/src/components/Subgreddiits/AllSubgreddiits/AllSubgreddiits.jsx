@@ -8,6 +8,7 @@ import Navbar from "../../Navbar";
 import Loading from "../../Loading";
 import NotFound from "../../NotFound";
 import SubgreddiitCard from "../SubgreddiitCard";
+import TagSelect from "../TagSelect";
 
 const debug = false;
 
@@ -17,6 +18,8 @@ const AllSubgreddiits = () => {
   ).username;
   const [leaveLoading, setLeaveLoading] = useState(false);
   const [query, setQuery] = useState("");
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedSorts, setSelectedSorts] = useState([])
 
   const getAllSubs = async () => {
     try {
@@ -59,8 +62,27 @@ const AllSubgreddiits = () => {
     ? notJoinedSubsFuse.search(query).map((entry) => entry.item)
     : allSubsQuery.data.not_joined_subs;
 
-  // console.log(joinedSubs);
-  // console.log(notJoinedSubs);
+  const allTags = joinedSubs
+    .map((item) => item.tags)
+    .flat()
+    .concat(notJoinedSubs.map((item) => item.tags).flat());
+  const allTagsOptions = allTags.map((tag) => {
+    return { value: tag, label: tag };
+  });
+
+  let displayJoined = joinedSubs;
+  if (selectedTags.length) {
+    displayJoined = joinedSubs.filter((item) =>
+      selectedTags.some((tagObj) => item.tags.includes(tagObj.value))
+    );
+  }
+
+  let displayNotJoined = notJoinedSubs;
+  if (selectedTags.length) {
+    displayNotJoined = notJoinedSubs.filter((item) =>
+      selectedTags.some((tagObj) => item.tags.includes(tagObj.value))
+    );
+  }
 
   return (
     <>
@@ -98,10 +120,24 @@ const AllSubgreddiits = () => {
             </div>
           </div>
 
-          <div className="flex flex-row justify-around">
-            <div>tags</div>
+          <div className="flex flex-row justify-around w-full">
+            <div className="flex justify-center w-1/2 mt-5">
+              <div className="w-1/2">
+                <TagSelect
+                  handleChange={(selected) => setSelectedTags(selected)}
+                  options={allTagsOptions}
+                />
+              </div>
+            </div>
 
-            <div>sort</div>
+            <div className="w-1/2 mt-5 flex justify-center">
+              <div className="w-1/2">
+                <TagSelect
+                  handleChange={(selected) => setSelectedTags(selected)}
+                  options={allTagsOptions}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -112,7 +148,7 @@ const AllSubgreddiits = () => {
         {/* joined subs */}
         <div className="p-4 flex flex-row flex-wrap w-full justify-around">
           {/* {allSubsQuery.data.joined_subs.map((sub, idx) => ( */}
-          {joinedSubs.map((sub, idx) => (
+          {displayJoined.map((sub, idx) => (
             <div
               key={`${Math.floor(Math.random() * 100)}-sub-${idx}-${sub?.name}`}
               className="md:w-1/2 lg:w-1/3 xl:w-1/4"
@@ -148,7 +184,7 @@ const AllSubgreddiits = () => {
         {/* not joined subs */}
         <div className="p-4 flex flex-row flex-wrap w-full justify-around">
           {/* {allSubsQuery.data.not_joined_subs.map((sub, idx) => ( */}
-          {notJoinedSubs.map((sub, idx) => (
+          {displayNotJoined.map((sub, idx) => (
             <div
               key={`${Math.floor(Math.random() * 100)}-sub-${idx}-${sub?.name}`}
               className="md:w-1/2 lg:w-1/3 xl:w-1/4"
