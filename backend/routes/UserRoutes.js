@@ -13,6 +13,10 @@ router.route("/unfollow").post(userController.unFollow);
 
 router.route("/edit").patch(userController.editProfile);
 
+router.route("/saved").get(userController.getSavedPosts);
+
+router.route("/following").get(userController.getFollowing);
+
 router.route("/:username").get(userController.getProfile);
 
 module.exports = router;

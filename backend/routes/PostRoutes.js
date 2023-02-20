@@ -22,6 +22,10 @@ router.route("/unsave/:subgr/:id").get(PostController.unsavePost);
 
 router.route("/upvote/:subgr/:id").get(PostController.upvotePost);
 
+router.route("/unupvote/:subgr/:id").get(PostController.removeUpvote);
+
 router.route("/downvote/:subgr/:id").get(PostController.downvotePost);
+
+router.route("/undownvote/:subgr/:id").get(PostController.removeDownvote);
 
 module.exports = router;
