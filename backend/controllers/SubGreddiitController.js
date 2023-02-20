@@ -551,7 +551,7 @@ const mySubgreddiits = async (req, res) => {
 const getAllSubs = async (req, res) => {
   const username = req.user;
 
-  const allSubs = await SubGreddiit.find({}, { _id: 0, __v: 0, createdAt: 0 })
+  const allSubs = await SubGreddiit.find({}, { _id: 0, __v: 0 })
     .lean()
     .exec();
 
