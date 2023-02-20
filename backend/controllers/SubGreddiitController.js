@@ -74,21 +74,21 @@ const getSubInfo = async (req, res) => {
   }
 
   const subgr = req.params.subgr;
-  //   console.log(subgr);
+  // //   console.log(subgr);
 
   const foundSubgr = await SubGreddiit.findOne(
     { name: subgr },
     {
       _id: 0,
-      __v: 0,
-      name: 1,
-      description: 1,
-      banned_keywords: 1,
-      num_posts: 1,
-      num_people: 1,
-      creator: 1,
-      createdAt: 1,
-      image: 1
+  //     __v: 0,
+  //     name: 1,
+  //     description: 1,
+  //     banned_keywords: 1,
+  //     num_posts: 1,
+  //     num_people: 1,
+  //     creator: 1,
+  //     createdAt: 1,
+  //     image: 1
     }
   );
 
@@ -100,6 +100,8 @@ const getSubInfo = async (req, res) => {
   }
 
   return res.status(200).send(foundSubgr);
+
+  // return res.status(200).send({message: "ok"})
 };
 
 /// @GET /gr/users/:subgr
