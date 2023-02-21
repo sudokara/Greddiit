@@ -14,7 +14,8 @@ router
 
 router
   .route("/comment/:subgr/:id")
-  .post(commentLimiter, PostController.makeComment);
+  .post(commentLimiter, PostController.makeComment)
+  .get(PostController.getComments);
 
 router.route("/save/:subgr/:id").get(PostController.savePost);
 
