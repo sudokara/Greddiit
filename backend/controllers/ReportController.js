@@ -1,6 +1,7 @@
 const Report = require("../models/ReportModel");
 const SubGreddiit = require("../models/SubGreddiitModel");
 const Post = require("../models/PostModel");
+const User = require("../models/UserModel");
 const StatusCodes = require("http-status-codes").StatusCodes;
 const ReasonPhrases = require("http-status-codes").ReasonPhrases;
 
@@ -218,10 +219,8 @@ const takeAction = async (req, res) => {
   if (action === "block") {
     const foundSubgr = await SubGreddiit.findOne(
       { name: foundReport.subgreddiit },
-      { creator: 1 }
-    )
-      .lean()
-      .exec();
+      { creator: 1, followers: 1, num_people: 1 }
+    );
 
     if (reported_user === foundSubgr.creator) {
       return res.status(StatusCodes.FORBIDDEN).send({
@@ -231,9 +230,67 @@ const takeAction = async (req, res) => {
     }
 
     // censor name in posts and comments
+    Post.updateMany(
+      { posted_by: reported_user },
+      {
+        posted_by: "blocked_user",
+        // comments: comments.map((comment) =>
+        //   comment.username === reported_user
+        //     ? { ...comment, username: "blocked_user" }
+        //     : comment
+        // ),
+      },
+      function (err, doc) {
+        if (err) {
+          return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+            error: ReasonPhrases.INTERNAL_SERVER_ERROR,
+            message: "MongoDB update failed",
+          });
+        }
+      }
+    );
+
     // change status to blocked
+    //! reduce number of people?
+    foundSubgr.followers = foundSubgr.followers.map((item) =>
+      item.username === reported_user ? { ...item, status: "blocked" } : item
+    );
+    foundSubgr.num_people -= 1;
+    foundSubgr.save((err, doc) => {
+      if (err) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+          error: ReasonPhrases.INTERNAL_SERVER_ERROR,
+          message: "MongoDB update failed",
+        });
+      }
+    });
+
     // add to left_subs
-    // ! should i count in num_people?
+    User.findOneAndUpdate(
+      { username: reported_user },
+      { $push: { left_subgreddiits: foundReport.subgreddiit } }
+    );
+
+    // modify status of report
+    Report.findOneAndUpdate(
+      {
+        reported_by: reported_by,
+        reported_user: reported_user,
+        post_id: post_id,
+      },
+      { status: "blocked" },
+      function (err, doc) {
+        if (err) {
+          return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+            error: ReasonPhrases.INTERNAL_SERVER_ERROR,
+            message: "MongoDB update failed",
+          });
+        }
+      }
+    );
+
+    // done
+    return res.status(StatusCodes.OK).send({ message: "User blocked" });
   }
 };
 
