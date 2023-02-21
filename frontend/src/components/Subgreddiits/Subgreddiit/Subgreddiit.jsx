@@ -98,7 +98,30 @@ const Subgreddiit = () => {
               <div className="card-body">
                 <h2 className="card-title">r/{subQuery.data?.name}</h2>
                 <div>
-                  <p>{subQuery.data.description}</p>
+                  <p>
+                    <span className="text-secondary font-bold">
+                      Description:{" "}
+                    </span>
+                    {subQuery.data.description}
+                  </p>
+                  <p>
+                    <span className="text-secondary font-bold">
+                      {subQuery.data.tags.length ? "Tags: " : "No Tags"}
+                    </span>
+                    {subQuery.data.tags.length
+                      ? subQuery.data.tags.join(",")
+                      : ""}
+                  </p>
+                  <p>
+                    <span className="text-secondary font-bold">
+                      {subQuery.data.banned_keywords.length
+                        ? "Banned Keywords: "
+                        : "No banned keywords"}{" "}
+                    </span>
+                    {subQuery.data.banned_keywords
+                      ? subQuery.data.banned_keywords.join(", ")
+                      : ""}
+                  </p>
                   <div>
                     <FiUsers style={{ display: "inline" }} /> :
                     {subQuery.data.num_people}
@@ -145,7 +168,7 @@ const Subgreddiit = () => {
                         downvoteActive={item.downvotes.includes(username)}
                         // ?check if saved
                         saveActive={postsQuery.data.saved.includes(item.id)}
-                        // !check if user is followed
+                        // ?check if user is followed
                         followActive={
                           item.posted_by !== username &&
                           postsQuery.data.following.includes(item.posted_by)
@@ -158,6 +181,7 @@ const Subgreddiit = () => {
                         postedIn={item.posted_in}
                         setLoading={setLoading}
                         allDisable={!isFollower}
+                        subgr={subQuery.data.name}
                       />
                     </div>
                   </div>

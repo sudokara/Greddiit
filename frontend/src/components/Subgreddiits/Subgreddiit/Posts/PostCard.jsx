@@ -6,11 +6,13 @@ import { ImWarning } from "react-icons/im";
 import { TfiCommentAlt } from "react-icons/tfi";
 import { axiosPrivate } from "../../../../api/axios";
 import jwt_decode from "jwt-decode";
+import CommentsCard from "./CommentsCard";
 
 const debug = true;
 
 const PostCard = ({
   id,
+  subgr,
   title,
   text,
   numUpvotes,
@@ -227,6 +229,7 @@ const PostCard = ({
                 <button
                   disabled={allDisable}
                   className="btn btn-outline mx-1 gap-2"
+                  onClick={() => setShowComments(true)}
                 >
                   <TfiCommentAlt style={{ display: "inline" }} />{" "}
                   {comments.length}
@@ -277,6 +280,25 @@ const PostCard = ({
           </div>
         </div>
       </div>
+      <CommentsCard
+        showModal={showComments}
+        setShowModal={setShowComments}
+        // comments={[
+        //   {
+        //     username: "rohan",
+        //     comment_text: "LCD IIIT",
+        //     _id: "63f470b903b1e3255ee86a2a",
+        //   },
+        //   {
+        //     username: "vineeth",
+        //     comment_text: "frog",
+        //     _id: "63f470b903b1e3255ee86a2a",
+        //   },
+        // ]}
+        comments={comments}
+        subgr={subgr}
+        id={id}
+      />
     </>
   );
 };
