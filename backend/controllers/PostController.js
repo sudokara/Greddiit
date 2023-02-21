@@ -45,7 +45,13 @@ const createPost = async (req, res) => {
   // const censoredText = postText.replace(filter, "****");
   // const censoredTitle = postTitle.replace(filter, "****");
   // const isCensored = postText !== censoredText || postTitle !== censoredTitle;
-  const isCensored = filter.test(postText) || filter.test(postTitle);
+  const toCensor =
+    foundSubgr.banned_keywords.length &&
+    !foundSubgr.banned_keywords.includes("") &&
+    !foundSubgr.banned_keywords.includes(" ");
+
+  let isCensored = false;
+  if (toCensor) isCensored = filter.test(postText) || filter.test(postTitle);
 
   // add the post to the subgreddiit
   // user who makes the post auto upvotes it
@@ -109,7 +115,10 @@ const getPosts = async (req, res) => {
   const foundPosts = await Post.find({ posted_in: subgr }).lean().exec();
 
   // censor banned keywords
-  const toCensor = foundSubgr.banned_keywords.length;
+  const toCensor =
+    foundSubgr.banned_keywords.length &&
+    !foundSubgr.banned_keywords.includes("") &&
+    !foundSubgr.banned_keywords.includes(" ");
   if (toCensor) {
     const filter = new RegExp(`${foundSubgr.banned_keywords.join("|")}`, "gi");
     const censoredPosts = foundPosts.map((item) => ({
@@ -129,7 +138,7 @@ const getPosts = async (req, res) => {
   }
 };
 
-/// @POST /psot/comment/:subgr/:postid
+/// @POST /post/comment/:subgr/:postid
 /// Add a comment to a post
 /// Logged in, user has joined subgr
 const makeComment = async (req, res) => {
@@ -151,6 +160,7 @@ const makeComment = async (req, res) => {
     { followers: 1, banned_keywords: 1 }
   );
   if (
+    !foundSubgr ||
     !foundSubgr.followers.some(
       (item) => item.username === req.user && item.blocked === false
     )
@@ -169,16 +179,24 @@ const makeComment = async (req, res) => {
       .send({ error: ReasonPhrases.BAD_REQUEST, message: "Post not found" });
   }
 
-  // censor banned keywords
+  // check if any censored words are in the title or text
   // the regex is /bannedword1|bannedword2|bannedword3/gi
   const filter = new RegExp(`${foundSubgr.banned_keywords.join("|")}`, "gi");
-  const censoredText = commentText.replace(filter, "****");
-  const isCensored = censoredText !== commentText;
+  // const censoredText = postText.replace(filter, "****");
+  // const censoredTitle = postTitle.replace(filter, "****");
+  // const isCensored = postText !== censoredText || postTitle !== censoredTitle;
+  const toCensor =
+    foundSubgr.banned_keywords.length &&
+    !foundSubgr.banned_keywords.includes("") &&
+    !foundSubgr.banned_keywords.includes(" ");
+
+  let isCensored = false;
+  if (toCensor) isCensored = filter.test(commentText);
 
   // add comment
   const newComment = {
     username: req.user,
-    comment_text: censoredText,
+    comment_text: commentText,
   };
   Post.findOneAndUpdate(
     { id: postId },
@@ -197,6 +215,53 @@ const makeComment = async (req, res) => {
   return res
     .status(StatusCodes.CREATED)
     .send({ message: "Comment added successfully", isCensored: isCensored });
+};
+
+/// @GET /post/comment/:subgr/:postid
+/// Get all the comments for a post
+/// Censor comment text
+const getComments = async (req, res) => {
+  const subgr = req.params.subgr;
+  const postId = req.params.id;
+
+  // check if user is in the subgreddiit and is not banned
+  const foundSubgr = await SubGreddiit.findOne(
+    { name: subgr },
+    { followers: 1, banned_keywords: 1 }
+  );
+  if (
+    !foundSubgr.followers.some(
+      (item) => item.username === req.user && item.blocked === false
+    )
+  ) {
+    return res.status(StatusCodes.FORBIDDEN).send({
+      error: ReasonPhrases.FORBIDDEN,
+      message: "You are not part of this subgreddiit or have been blocked",
+    });
+  }
+
+  // Check if post exists
+  const foundPost = await Post.findOne({ id: postId }, { comments: 1 });
+  if (!foundPost) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .send({ error: ReasonPhrases.BAD_REQUEST, message: "Post not found" });
+  }
+
+  const toCensor =
+    foundSubgr.banned_keywords.length &&
+    !foundSubgr.banned_keywords.includes("") &&
+    !foundSubgr.banned_keywords.includes(" ");
+
+  let censoredComments = foundPost.comments;
+  if (toCensor) {
+    const filter = new RegExp(`${foundSubgr.banned_keywords.join("|")}`, "gi");
+    censoredComments = foundPost.comments.map((comment) =>
+      comment.replace(filter, "****")
+    );
+  }
+
+  return res.status(StatusCodes.OK).send(censoredComments);
 };
 
 /// @GET /post/save/:subgr/:postId
@@ -635,10 +700,11 @@ module.exports = {
   createPost,
   getPosts,
   makeComment,
+  getComments,
   savePost,
   unsavePost,
   upvotePost,
   removeUpvote,
   downvotePost,
-  removeDownvote
+  removeDownvote,
 };
