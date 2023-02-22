@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import NotFound from "../../NotFound";
 import RequireSubMod from "../RequireSubMod";
 import JoinRequests from "./JoinRequests";
+import Reports from "./Reports";
 import UserData from "./UserData";
 
 const ModActions = ({ mode }) => {
@@ -11,7 +12,7 @@ const ModActions = ({ mode }) => {
     users: <UserData />,
     jreqs: <JoinRequests />,
     stats: "stats",
-    reports: "reports",
+    reports: <Reports />,
   };
 
   return (

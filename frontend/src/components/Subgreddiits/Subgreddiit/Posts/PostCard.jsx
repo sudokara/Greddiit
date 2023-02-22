@@ -196,6 +196,8 @@ const PostCard = ({
     },
   });
 
+  
+
   return (
     <>
       <div className="w-full">
