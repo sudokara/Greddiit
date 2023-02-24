@@ -14,7 +14,7 @@ const createReport = async (req, res) => {
   const hasAllProps = properties.every((item) => req.body.hasOwnProperty(item));
 
   if (!hasAllProps) {
-    return res.StatusCodes(StatusCodes.BAD_REQUEST).send({
+    return res.status(StatusCodes.BAD_REQUEST).send({
       error: ReasonPhrases.BAD_REQUEST,
       message: "Please provide all fields",
     });
@@ -173,6 +173,7 @@ const takeAction = async (req, res) => {
 
   //? if delete post, remove the request, delete the post and decrement number of posts in the sub
   if (action === "delete") {
+    // delete the post
     Post.findOneAndDelete({ id: post_id }, function (err, doc) {
       if (err) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
@@ -182,6 +183,7 @@ const takeAction = async (req, res) => {
       }
     });
 
+    // decrement the number of posts in the subgreddiit
     SubGreddiit.findOneAndUpdate(
       { name: foundReport.subgreddiit },
       { $inc: { num_posts: -1 } },
@@ -195,7 +197,23 @@ const takeAction = async (req, res) => {
       }
     );
 
-    Report.findOneAndDelete(
+    // remove from saved posts
+    User.updateMany(
+      { saved_posts: post_id },
+      { $pull: { saved_posts: post_id } },
+      {
+        function(err, doc) {
+          if (err) {
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+              error: ReasonPhrases.INTERNAL_SERVER_ERROR,
+              message: "MongoDB update failed",
+            });
+          }
+        },
+      }
+    );
+
+    /* Report.findOneAndDelete(
       {
         reported_by: reported_by,
         reported_user: reported_user,
@@ -209,7 +227,17 @@ const takeAction = async (req, res) => {
           });
         }
       }
-    );
+    ); */
+
+    // delete all the reports for that post
+    Report.deleteMany({ post_id: post_id }, function (err, doc) {
+      if (err) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+          error: ReasonPhrases.INTERNAL_SERVER_ERROR,
+          message: "MongoDB update failed",
+        });
+      }
+    });
 
     return res.status(StatusCodes.OK).send({ message: "Post deleted" });
   }
@@ -230,7 +258,7 @@ const takeAction = async (req, res) => {
     }
 
     // censor name in posts and comments
-    Post.updateMany(
+    /* Post.updateMany(
       { posted_by: reported_user },
       {
         posted_by: "blocked_user",
@@ -248,6 +276,21 @@ const takeAction = async (req, res) => {
           });
         }
       }
+    ); */
+    Post.updateMany(
+      {
+        $or: [
+          { username: reported_user },
+          { "comments.username": reported_user },
+        ],
+      },
+      {
+        $set: {
+          username: "blocked_user",
+          "comments.$[elem].username": "blocked_user",
+        },
+      },
+      { arrayFilters: [{ "elem.username": reported_user }] }
     );
 
     // change status to blocked
@@ -271,12 +314,10 @@ const takeAction = async (req, res) => {
       { $push: { left_subgreddiits: foundReport.subgreddiit } }
     );
 
-    // modify status of report
-    Report.findOneAndUpdate(
+    // modify status of all reports for that person
+    Report.updateMany(
       {
-        reported_by: reported_by,
         reported_user: reported_user,
-        post_id: post_id,
       },
       { status: "blocked" },
       function (err, doc) {
