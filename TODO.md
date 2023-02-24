@@ -1,8 +1,43 @@
+
+- [x] report button
+- [x] remove borders in sub page
+- [ ] fix block button
+- [ ] remove react query debugger
+- [ ] dockerize
+- [ ] stats
+- [ ] turn off axios console.log
+- [ ] turn debug off
+- [ ] switch .env to PROD
+- [ ] readme
+
 Now:
-- [x] Modify sub schema to include image
-- [x] store image in db
-- [x] Send image to backend
-- [x] Display image in sub card, else show random
+- [x] Saved posts send isfollowing to postcard
+- [x] show posts in sub page
+- [x] check if saved already
+- [x] check if following already
+- [x] follow/unfollow button in post
+- [x] upvote/downvote buttons 
+- [x] update upvote count
+- [x] save/unsave button in post
+- [x] report button in post
+- [x] comments modal
+- [x] create comment
+- [x] disable buttons if not joined sub
+- [x] sorts and tags
+- [x] reports backend
+- [ ] reports button
+- [x] reports page
+- [x] delete posts and reports if sub deleted
+- [ ] stats
+
+Stats Schema:
+Number of reported posts
+Number of deleted posts
+
+By day:
+    Number of members
+    Number of posts made
+    Number of visitors(going to r/:subname)
 
 Misc
 
@@ -13,7 +48,6 @@ Misc
 - [ ] input validation with regex on frontend and backend
 - [x] fix buttons for users, join reqs, stats and reports
 - [ ] fix home button staying active when seeing mod pages
-- [ ] shift to [responsive card](rsbvbzryjrtovrqqfy@tcwlm.com)
 
 # Backend
 
@@ -33,18 +67,13 @@ Misc
 - [x] check unique username and email
 - [x] check if user exists when verifying jwt
 - [x] and not when creating
-- [ ] restrict [x]users, [x]join reqs, stats, reports to mod
-- [ ] censor when returning post
+- [x] restrict [x]users, [x]join reqs, stats, reports to mod
+- [x] censor when returning post
 
 - [ ] reports
-- [ ] what to do for blocked users?
-- [ ] Delete posts and reports when deleting subgreddiit
-- [ ] delete left_subgreddiit entry for users when deleting subgreddiit
-- [ ] remove saved posts from deleted subgreddiits
-- [ ] List of all subgreddiits (paginated?)
-- [ ] List of all posts for subgreddiit (paginated?)
-- [ ] List of all comments for a post (paginated?)
-- [ ] Infinite scrolling
+- [x] Delete posts and reports when deleting subgreddiit
+- [x] delete left_subgreddiit entry for users when deleting subgreddiit
+- [x] remove saved posts from deleted subgreddiits
 
 # Frontend
 
@@ -53,15 +82,14 @@ Misc
 - [x] Login
 - [x] register
 - [x] Disable editing username in frontend
-- [ ] Verify password before editing?
 
 ## My Subgreddiits page:
 
 - [x] Create subgreddiit
 - [x] Display My subgreddiits
 - [x] Search
-- [ ] filter
-- [ ] sort
+- [x] filter
+- [x] sort
       add buttons: - [x] delete subgreddiit: BsTrash - [x] go to subgreddiit: BsArrowUpRightSquare - [x] create subgreddiit: CgFolderAdd - [x] search: BiSearch - [x] Subgreddit card: https://daisyui.com/components/card/#card-with-image-overlay - [x] Limit description to first 30 characters
 
       - [x] why doesnt modal stay open after creating
@@ -72,14 +100,7 @@ Random photo : https://source.unsplash.com/random
 
 ## All Subgreddiits:
 
-- [ ] make proper dialog box for join request not sent
 - [ ] why isnt loading for join req/ leave working
-
-tags:
-
-```html
-<div className="badge badge-accent badge-outline">accent</div>
-```
 
 ## Subgreddiit page navbar:
 
@@ -92,6 +113,10 @@ tags:
 
 BiUpvote
 BiDownvote
+TfiCommentAlt
+BsBookmark
+ImWarning
+AiOutlineUserAdd
 
 - [ ] Public profile
 

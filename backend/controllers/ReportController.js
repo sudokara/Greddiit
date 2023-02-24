@@ -111,6 +111,18 @@ const takeAction = async (req, res) => {
   const post_id = req.body?.post_id;
   const action = req.body?.action;
 
+  //////////////////////////////////////////////////
+  //   console.log(reported_user === "sinistration");
+  //   const doc = await SubGreddiit.findOne({
+  //     "followers.username": "sinistration",
+  //   });
+  //   console.log(doc);
+  //   const block = doc.followers.find((f) => f.username === reported_user);
+  //   block.blocked = true;
+  //   await doc.save();
+  //   return res.status(200);
+  //   ///////////////////////////////////////////
+
   if (!reported_by || !reported_user || !post_id || !action) {
     return res.status(StatusCodes.BAD_REQUEST).send({
       error: ReasonPhrases.BAD_REQUEST,
@@ -257,8 +269,8 @@ const takeAction = async (req, res) => {
       });
     }
 
-    // censor name in posts and comments
-    /* Post.updateMany(
+    // censor name in posts
+    Post.updateMany(
       { posted_by: reported_user },
       {
         posted_by: "blocked_user",
@@ -276,8 +288,8 @@ const takeAction = async (req, res) => {
           });
         }
       }
-    ); */
-    Post.updateMany(
+    );
+    /* Post.updateMany(
       {
         $or: [
           { username: reported_user },
@@ -291,22 +303,42 @@ const takeAction = async (req, res) => {
         },
       },
       { arrayFilters: [{ "elem.username": reported_user }] }
-    );
+    ); */
 
     // change status to blocked
     //! reduce number of people?
-    foundSubgr.followers = foundSubgr.followers.map((item) =>
-      item.username === reported_user ? { ...item, status: "blocked" } : item
-    );
-    foundSubgr.num_people -= 1;
-    foundSubgr.save((err, doc) => {
-      if (err) {
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
-          error: ReasonPhrases.INTERNAL_SERVER_ERROR,
-          message: "MongoDB update failed",
-        });
+
+    SubGreddiit.findOneAndUpdate(
+      { name: foundReport.subgreddiit },
+      { $inc: { num_people: -1 } },
+      function (err, doc) {
+        if (err) {
+          return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+            error: ReasonPhrases.INTERNAL_SERVER_ERROR,
+            message: "MongoDB update failed",
+          });
+        }
       }
+    );
+
+    // SubGreddiit.findOneAndUpdate(
+    //   { "followers.username": reported_user },
+    //   { $set: { "followers.$.blocked": true } },
+    //   function (err, doc) {
+    //     if (err) {
+    //       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+    //         error: ReasonPhrases.INTERNAL_SERVER_ERROR,
+    //         message: "MongoDB update failed",
+    //       });
+    //     }
+    //   }
+    // );
+    const doc = await SubGreddiit.findOne({
+      name: foundReport.subgreddiit,
     });
+    const block = doc.followers.find((f) => f.username === reported_user);
+    block.blocked = true;
+    await doc.save();
 
     // add to left_subs
     User.findOneAndUpdate(
@@ -367,7 +399,7 @@ const getReports = async (req, res) => {
   )
     .lean()
     .exec();
-  console.log(foundReports);
+  //   console.log(foundReports);
 
   // Return list
   return res.status(StatusCodes.OK).send(foundReports);

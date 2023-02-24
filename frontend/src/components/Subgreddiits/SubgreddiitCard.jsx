@@ -95,10 +95,7 @@ const SubgreddiitCard = ({
 
   return (
     <div className="flex w-full">
-      <div
-        className="card card-compact w-96 m-5 bg-base-100 shadow-xl cursor-pointer"
-        onClick={() => navigate("/r/" + name)}
-      >
+      <div className="card card-compact w-96 m-5 bg-base-100 shadow-xl">
         <figure className="hover:cursor-pointer">
           {/* <img
             // src="https://source.unsplash.com/random"
@@ -109,7 +106,10 @@ const SubgreddiitCard = ({
           /> */}
         </figure>
         <div className="card-body">
-          <h2 className="text-center font-bold text-3xl text-primary">
+          <h2
+            className="text-center font-bold text-3xl text-primary cursor-pointer"
+            onClick={() => navigate("/r/" + name)}
+          >
             r/{name}
           </h2>
 

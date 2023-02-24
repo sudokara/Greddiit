@@ -69,7 +69,7 @@ const Subgreddiit = () => {
   if (postsQuery.isError) return "Error fetching data";
 
   const isFollower = subQuery.data.followers.some(
-    (item) => item.username === username
+    (item) => item.username === username && item.blocked === false
   );
 
   return (
@@ -150,12 +150,12 @@ const Subgreddiit = () => {
 
           <div className="divider"></div>
 
-          <div className="flex flex-col w-full justify-around border-2 border-red-500">
+          <div className="flex flex-col w-full justify-around">
             {postsQuery.data.posts.length
               ? postsQuery.data.posts.map((item) => (
                   <div
                     key={item._id}
-                    className="flex flex-wrap justify-center border-2 border-sky-500"
+                    className="flex flex-wrap justify-center"
                   >
                     <div className="lg:w-2/3 md:w-full">
                       <PostCard

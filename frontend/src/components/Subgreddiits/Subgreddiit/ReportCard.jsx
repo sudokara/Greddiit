@@ -7,7 +7,8 @@ const debug = true;
 const ReportCard = ({ report }) => {
   const [loading, setLoading] = useState(false);
   const queryClient = useQueryClient();
-  const [timerId, setTimerId] = useState(null);
+  const [buttonText, setButtonText] = useState("Block User");
+  const [timerIds, setTimerIds] = useState([]);
 
   const handleAction = (action) => {
     if (action !== "ignore" && action !== "delete" && action !== "block") {
@@ -42,38 +43,39 @@ const ReportCard = ({ report }) => {
     },
   });
 
-  const blockButtonClick = () => {
-    // if (countdown !== "Block") {
-    //   setCountdown("Block");
-    // } else {
-    //   setCountdown("Cancel: 3");
-    //   setTimeout(() => {
-    //     setCountdown("Cancel: 2");
-    //   }, 1000);
-    //   setTimeout(() => {
-    //     setCountdown("Cancel: 1");
-    //   }, 1000);
-    //   setTimeout(() => {
-    //     actionMutation.mutate("block");
-    //   }, 1000);
-    // }
-    if (timerId) {
-      clearTimeout(timerId);
-      setTimerId(null);
-    } else {
-      const newTimer = setTimeout(() => {
-        actionMutation.mutate("block");
-        setTimerId(null);
-      }, 3000);
-      setTimerId(newTimer);
+  const blockButtonClick = async () => {
+    if (timerIds.length) {
+      // cancel
+      timerIds.forEach((id) => clearTimeout(id));
+      setTimerIds([]);
+      setButtonText("Block User");
+      return;
     }
+    setButtonText("Cancel in 3s");
+
+    const timer1 = setTimeout(() => {
+      setButtonText("Cancel in 2s");
+    }, 1000);
+
+    const timer2 = setTimeout(() => {
+      setButtonText("Cancel in 1s");
+    }, 2000);
+
+    const timer3 = setTimeout(() => {
+      // done, block user
+      setTimerIds([]);
+      setButtonText("Block User");
+      actionMutation.mutate("block");
+    }, 3000);
+
+    setTimerIds([timer1, timer2, timer3]);
   };
 
   useEffect(() => {
     return () => {
-      if (timerId) clearTimeout(timerId);
+      timerIds.forEach((id) => clearTimeout(id));
     };
-  }, [timerId]);
+  }, [timerIds]);
 
   return (
     <div className="flex w-full justify-center">
@@ -106,7 +108,7 @@ const ReportCard = ({ report }) => {
                 disabled={report.status === "ignored"}
                 onClick={blockButtonClick}
               >
-                {countdown}
+                {buttonText}
               </button>
             </div>
           )}
