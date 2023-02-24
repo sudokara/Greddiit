@@ -196,7 +196,26 @@ const PostCard = ({
     },
   });
 
-  
+  const handleReport = async () => {
+    const concern = window.prompt(
+      "What is your concern with this post? ",
+      "Circumventing banned keywords"
+    );
+    if (concern == null) return;
+
+    try {
+      const response = await axiosPrivate.post("/api/report", {
+        concern: concern,
+        subgreddiit: subgr,
+        post_id: id,
+      });
+      if (debug) console.log(await response.data);
+    } catch (err) {
+      if (debug) console.error(err);
+    }
+
+    window.alert("Report made!");
+  };
 
   return (
     <>
@@ -227,7 +246,7 @@ const PostCard = ({
             <p>{text.length > 47 ? text.slice(0, 47) + "..." : text}</p>
             <div className="card-actions justify-end">
               <div className="flex justify-around flex-wrap">
-                {/* //! comments  */}
+                {/* //? comments  */}
                 <button
                   disabled={allDisable}
                   className="btn btn-outline mx-1 gap-2"
@@ -273,6 +292,7 @@ const PostCard = ({
                 <button
                   disabled={reportDisable || allDisable}
                   className="btn btn-outline mx-1 gap-2"
+                  onClick={handleReport}
                 >
                   <ImWarning />
                   Report
