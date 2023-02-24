@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const Post = require("../models/PostModel");
+const Report = require("../models/ReportModel");
 const SubGreddiit = require("../models/SubGreddiitModel");
 const User = require("../models/UserModel");
 const StatusCodes = require("http-status-codes").StatusCodes;
@@ -80,15 +82,15 @@ const getSubInfo = async (req, res) => {
     { name: subgr },
     {
       _id: 0,
-  //     __v: 0,
-  //     name: 1,
-  //     description: 1,
-  //     banned_keywords: 1,
-  //     num_posts: 1,
-  //     num_people: 1,
-  //     creator: 1,
-  //     createdAt: 1,
-  //     image: 1
+      //     __v: 0,
+      //     name: 1,
+      //     description: 1,
+      //     banned_keywords: 1,
+      //     num_posts: 1,
+      //     num_people: 1,
+      //     creator: 1,
+      //     createdAt: 1,
+      //     image: 1
     }
   );
 
@@ -201,6 +203,31 @@ const deleteSubgreddiit = async (req, res) => {
     });
   }
 
+  // remove saved posts
+  User.updateMany(
+    {
+      saved_posts: {
+        $in: Post.find({ posted_in: subgr }).distinct("id"),
+      },
+    },
+    {
+      $pull: {
+        saved_posts: {
+          $in: Post.find({ subreddit: subgr }).distinct("id"),
+        },
+      },
+    },
+    function (err, doc) {
+      if (err) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+          error: ReasonPhrases.INTERNAL_SERVER_ERROR,
+          message: "MongoDB update failed",
+        });
+      }
+    }
+  );
+
+  // delete sub
   SubGreddiit.findOneAndDelete({ name: subgr }, function (err, raw) {
     if (err) {
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
@@ -210,9 +237,43 @@ const deleteSubgreddiit = async (req, res) => {
     }
   });
 
+  // delete posts
+  Post.deleteMany({ posted_in: subgr }, function (err, doc) {
+    if (err) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+        error: ReasonPhrases.INTERNAL_SERVER_ERROR,
+        message: "MongoDB update failed",
+      });
+    }
+  });
+
+  // delete reports
+  Report.deleteMany({ subgreddiit: subgr }, function (err, doc) {
+    if (err) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+        error: ReasonPhrases.INTERNAL_SERVER_ERROR,
+        message: "MongoDB update failed",
+      });
+    }
+  });
+
+  // remove from left subs
+  User.updateMany(
+    { left_subgreddiits: subgr },
+    { $pull: { left_subgreddiits: subgr } },
+    function (err, doc) {
+      if (err) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+          error: ReasonPhrases.INTERNAL_SERVER_ERROR,
+          message: "MongoDB update failed",
+        });
+      }
+    }
+  );
+
   return res
     .status(StatusCodes.OK)
-    .send({ message: "Functionality incomplete" });
+    .send({ message: "Deleted subgreddiit" });
 };
 
 /// Get pending join requests
@@ -551,9 +612,7 @@ const mySubgreddiits = async (req, res) => {
 const getAllSubs = async (req, res) => {
   const username = req.user;
 
-  const allSubs = await SubGreddiit.find({}, { _id: 0, __v: 0 })
-    .lean()
-    .exec();
+  const allSubs = await SubGreddiit.find({}, { _id: 0, __v: 0 }).lean().exec();
 
   const checkFollower = (followers) => {
     if (
