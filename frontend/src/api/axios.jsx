@@ -1,11 +1,13 @@
 import axios from "axios";
 
 export default axios.create({
-  baseURL: "http://localhost:5000",
+  // baseURL: "http://localhost:5000",
+  baseURL: process.env.BACKEND_URL,
 });
 
 export const axiosPrivate = axios.create({
-  baseURL: "http://localhost:5000",
+  // baseURL: "http://localhost:5000",
+  baseURL: process.env.BACKEND_URL,
 });
 
 axiosPrivate.interceptors.request.use(
