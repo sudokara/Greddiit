@@ -21,7 +21,7 @@ const SubgreddiitCard = ({
   showLeave,
   showDelete,
   showDisabledLeave,
-  image
+  image,
 }) => {
   const navigate = useNavigate();
 
@@ -95,18 +95,18 @@ const SubgreddiitCard = ({
 
   return (
     <div className="flex w-full">
-      <div className="card card-compact w-96 m-5 bg-base-100 shadow-xl">
-        <figure
-          className="hover:cursor-pointer"
-          onClick={() => navigate("/r/" + name)}
-        >
-          <img
+      <div
+        className="card card-compact w-96 m-5 bg-base-100 shadow-xl cursor-pointer"
+        onClick={() => navigate("/r/" + name)}
+      >
+        <figure className="hover:cursor-pointer">
+          {/* <img
             // src="https://source.unsplash.com/random"
             src={image || "https://source.unsplash.com/random"}
             width={384}
             style={{maxHeight: "384px"}}
             alt={`${name}`}
-          />
+          /> */}
         </figure>
         <div className="card-body">
           <h2 className="text-center font-bold text-3xl text-primary">
